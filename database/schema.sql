@@ -1,17 +1,9 @@
--- ============================================================
--- Health Meal Planner Database - Schema Definition
--- Database: meal_planner_db
--- DBMS: MySQL
--- ============================================================
-
+-- HEAL MEAL SCHEMA DEFINITION
 DROP DATABASE IF EXISTS meal_planner_db;
 CREATE DATABASE meal_planner_db;
 USE meal_planner_db;
 
--- ============================================================
--- Table: User
--- Stores registered users with dietary preferences
--- ============================================================
+--USER (stores dietary preferences
 CREATE TABLE user (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -23,10 +15,7 @@ CREATE TABLE user (
     INDEX idx_email (email)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- Table: UserHealthGoal
--- Tracks user's health and fitness goals
--- ============================================================
+-- USER HEALTH GOAL - tracks users fitness goals
 CREATE TABLE user_health_goal (
     goal_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -39,10 +28,7 @@ CREATE TABLE user_health_goal (
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ============================================================
--- Table: Ingredient
--- Stores ingredients with nutritional information
--- ============================================================
+--INGREDIENT - stores data of ingredients with nutrition info
 CREATE TABLE ingredient (
     ingredient_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -54,10 +40,7 @@ CREATE TABLE ingredient (
     INDEX idx_name (name)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- Table: Recipe
--- Stores recipes created by users
--- ============================================================
+--RECIPE - stores recipe  created by users
 CREATE TABLE recipe (
     recipe_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(200) NOT NULL,
@@ -75,10 +58,7 @@ CREATE TABLE recipe (
     INDEX idx_created_by (created_by)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- Table: RecipeIngredient
--- Many-to-many relationship between Recipe and Ingredient
--- ============================================================
+--RECIPE INGREDIENT - m-m relationship between recipe and ingredients
 CREATE TABLE recipe_ingredient (
     recipe_id INT NOT NULL,
     ingredient_id INT NOT NULL,
@@ -89,10 +69,7 @@ CREATE TABLE recipe_ingredient (
     FOREIGN KEY (ingredient_id) REFERENCES ingredient(ingredient_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ============================================================
--- Table: RecipeTag
--- Tags for filtering recipes (vegan, low-carb, high-protein, etc.)
--- ============================================================
+--RECIPE TAG - used for filtering ingredients
 CREATE TABLE recipe_tag (
     recipe_id INT NOT NULL,
     tag_name VARCHAR(50) NOT NULL,
@@ -101,10 +78,7 @@ CREATE TABLE recipe_tag (
     INDEX idx_tag (tag_name)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- Table: Rating
--- User ratings and comments for recipes
--- ============================================================
+--RATING -includes comments from the users
 CREATE TABLE rating (
     rating_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -117,10 +91,7 @@ CREATE TABLE rating (
     UNIQUE KEY unique_user_recipe (user_id, recipe_id)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- Table: MealPlan
--- User's meal planning schedules
--- ============================================================
+--MEAL PLAN - user's meal planning schedule
 CREATE TABLE meal_plan (
     mealplan_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -132,10 +103,7 @@ CREATE TABLE meal_plan (
     INDEX idx_user_dates (user_id, start_date, end_date)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- Table: MealEntry
--- Individual meal entries within a meal plan
--- ============================================================
+--MEAL ENTRY - individual meal entry within a meal plan
 CREATE TABLE meal_entry (
     mealentry_id INT PRIMARY KEY AUTO_INCREMENT,
     mealplan_id INT NOT NULL,
@@ -147,10 +115,7 @@ CREATE TABLE meal_entry (
     INDEX idx_mealplan_date (mealplan_id, date)
 ) ENGINE=InnoDB;
 
--- ============================================================
--- Table: ShoppingList
--- Shopping lists generated from meal plans
--- ============================================================
+--SHOPPING LIST - generated from meal plans
 CREATE TABLE shopping_list (
     list_id INT PRIMARY KEY AUTO_INCREMENT,
     mealplan_id INT NOT NULL,
@@ -158,10 +123,7 @@ CREATE TABLE shopping_list (
     FOREIGN KEY (mealplan_id) REFERENCES meal_plan(mealplan_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ============================================================
--- Table: ShoppingListItem
--- Individual items in a shopping list
--- ============================================================
+--SHOPPING LIST ITEMS - separate items from the list
 CREATE TABLE shoppingList_item (
     item_id INT PRIMARY KEY AUTO_INCREMENT,
     list_id INT NOT NULL,
@@ -173,6 +135,3 @@ CREATE TABLE shoppingList_item (
     FOREIGN KEY (ingredient_id) REFERENCES ingredient(ingredient_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ============================================================
--- End of Schema
--- ============================================================

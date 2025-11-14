@@ -1,12 +1,9 @@
--- ============================================================
--- Health Meal Planner Database - Sample Data
--- ============================================================
+--Sample data for heal meal database
 
 USE heal_meal_db;
 
--- ============================================================
--- Insert Users (50 users)
--- ============================================================
+--User names (50)
+
 INSERT INTO user (name, email, password, diet_type, preferences) VALUES
 ('Alisher Karimov', 'alisher.karimov@email.com', 'pass123', 'balanced', 'Loves spicy food'),
 ('Nigora Abdullayeva', 'nigora.a@email.com', 'pass123', 'vegetarian', 'Prefers low-sodium meals'),
@@ -59,9 +56,8 @@ INSERT INTO user (name, email, password, diet_type, preferences) VALUES
 ('Bahrom Qodirov', 'bahrom.qodirov@email.com', 'pass123', 'mediterranean', 'Heart attack survivor'),
 ('Mariya Fedorova', 'mariya.fedorova@email.com', 'pass123', 'balanced', 'Cooking show host');
 
--- ============================================================
--- Insert Health Goals (for some users)
--- ============================================================
+--user health goals
+
 INSERT INTO user_health_goal (user_id, daily_calorie_target, protein_target, carb_target, fat_target, goal_type, start_date) VALUES
 (1, 2200, 150, 200, 80, 'maintenance', '2025-01-01'),
 (4, 1500, 120, 30, 100, 'weight_loss', '2025-01-01'),
@@ -69,9 +65,8 @@ INSERT INTO user_health_goal (user_id, daily_calorie_target, protein_target, car
 (15, 2500, 180, 150, 90, 'athletic_performance', '2025-02-01'),
 (20, 1600, 100, 40, 110, 'weight_loss', '2025-01-10');
 
--- ============================================================
--- Insert Ingredients (300+ ingredients)
--- ============================================================
+--Ingredients
+
 INSERT INTO ingredient (name, unit, calories_per_unit, protein, fat, carbs) VALUES
 -- Proteins
 ('Chicken Breast', 'gram', 1.65, 0.31, 0.036, 0),
@@ -162,7 +157,7 @@ INSERT INTO ingredient (name, unit, calories_per_unit, protein, fat, carbs) VALU
 ('Salt', 'teaspoon', 0, 0, 0, 0),
 ('Black Pepper', 'teaspoon', 6, 0.2, 0.1, 1.5);
 
--- Add more ingredients to reach 300+
+
 INSERT INTO ingredient (name, unit, calories_per_unit, protein, fat, carbs) VALUES
 ('Beef Sirloin', 'gram', 2.71, 0.253, 0.176, 0),
 ('Lamb Chop', 'gram', 2.94, 0.246, 0.215, 0),
@@ -374,9 +369,8 @@ INSERT INTO ingredient (name, unit, calories_per_unit, protein, fat, carbs) VALU
 ('Panko Breadcrumbs', 'cup', 110, 3.7, 0.8, 20.4),
 ('Regular Breadcrumbs', 'cup', 427, 13.4, 5.8, 78.3);
 
--- ============================================================
--- Insert Recipes (100+ recipes focused on health/fitness)
--- ============================================================
+--Healthy recipes
+
 INSERT INTO recipe (title, description, prep_time, cook_time, servings, difficulty, category, created_by) VALUES
 -- Breakfast Recipes
 ('High-Protein Overnight Oats', 'Creamy oats with Greek yogurt and berries, perfect for meal prep', 10, 0, 1, 'Easy', 'Breakfast', 1),
@@ -495,9 +489,8 @@ INSERT INTO recipe (title, description, prep_time, cook_time, servings, difficul
 ('Bacon-Wrapped Asparagus', 'Crispy bacon wrapped around asparagus spears', 10, 20, 4, 'Easy', 'Keto', 29),
 ('Keto Beef Tacos', 'Low-carb tacos with lettuce wraps', 15, 15, 4, 'Easy', 'Keto', 37);
 
--- ============================================================
--- Insert Recipe Ingredients (linking recipes to ingredients)
--- ============================================================
+
+--Recipe ingredients
 
 -- Recipe 1: High-Protein Overnight Oats
 INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
@@ -730,9 +723,8 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (30, 70, 15, 'tablespoon'),
 (30, 61, 2, 'clove');
 
--- ============================================================
--- Insert Recipe Tags
--- ============================================================
+--Recipe tags
+
 INSERT INTO recipe_tag (recipe_id, tag_name) VALUES
 -- Breakfast tags
 (1, 'high-protein'), (1, 'meal-prep'), (1, 'vegetarian'),
@@ -770,11 +762,9 @@ INSERT INTO recipe_tag (recipe_id, tag_name) VALUES
 (29, 'high-protein'), (29, 'low-carb'), (29, 'paleo'),
 (30, 'high-protein'), (30, 'low-carb'), (30, 'omega-3');
 
--- Add more tags for remaining recipes...
 
--- ============================================================
--- Insert Ratings and Comments
--- ============================================================
+--Rating system and comments
+
 INSERT INTO rating (user_id, recipe_id, rating, comment) VALUES
 (1, 21, 5, 'Perfect salmon recipe! Easy to make and delicious.'),
 (2, 1, 5, 'Love these overnight oats. Great for meal prep!'),
@@ -797,9 +787,9 @@ INSERT INTO rating (user_id, recipe_id, rating, comment) VALUES
 (19, 19, 5, 'Lettuce wraps are perfect for low-carb diet.'),
 (20, 27, 4, 'Turkey meatballs are healthy and tasty.');
 
--- ============================================================
--- Insert Meal Plans
--- ============================================================
+
+--Meal Plans
+
 INSERT INTO meal_plan (user_id, start_date, end_date, title) VALUES
 (1, '2025-11-10', '2025-11-16', 'Week 1 - Balanced Diet'),
 (1, '2025-11-17', '2025-11-23', 'Week 2 - Lean & Green'),
@@ -812,9 +802,7 @@ INSERT INTO meal_plan (user_id, start_date, end_date, title) VALUES
 (5, '2025-11-10', '2025-11-16', 'Paleo Week 1'),
 (6, '2025-11-10', '2025-11-16', 'Gluten-Free Week');
 
--- ============================================================
--- Insert Meal Entries
--- ============================================================
+--Meal Entries
 
 -- User 1 - Week 1 Meal Plan
 INSERT INTO meal_entry (mealplan_id, recipe_id, date, meal_type) VALUES
@@ -883,15 +871,12 @@ INSERT INTO meal_entry (mealplan_id, recipe_id, date, meal_type) VALUES
 (3, 11, '2025-11-16', 'Lunch'),
 (3, 30, '2025-11-16', 'Dinner');
 
--- ============================================================
--- Insert Shopping Lists
--- ============================================================
+--Shopping list
 INSERT INTO shopping_list (mealplan_id) VALUES
 (1), (2), (3), (4), (5);
 
--- ============================================================
--- Insert Shopping List Items (for meal plan 1)
--- ============================================================
+--Shopping list items
+
 INSERT INTO shoppinglist_item (list_id, ingredient_id, total_quantity, unit, is_purchased) VALUES
 (1, 1, 600, 'gram', FALSE),
 (1, 3, 200, 'gram', FALSE),
@@ -904,6 +889,3 @@ INSERT INTO shoppinglist_item (list_id, ingredient_id, total_quantity, unit, is_
 (1, 38, 150, 'gram', FALSE),
 (1, 60, 50, 'gram', FALSE);
 
--- ============================================================
--- End of Sample Data
--- ============================================================
