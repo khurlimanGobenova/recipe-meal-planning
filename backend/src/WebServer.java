@@ -134,7 +134,7 @@ public class WebServer {
         }
     }
     
-    // api: get recipe details - ALREADY FIXED
+    // api: get recipe details
     static class RecipeDetailHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
@@ -253,10 +253,9 @@ public class WebServer {
         }
     }
     
-    //api: search recipes - FIXED
+    //api: search recipes 
     static class SearchHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
-            // ADD CORS headers
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Content-Type", "application/json");
             
@@ -312,10 +311,9 @@ public class WebServer {
         }
     }
     
-    //api: get meal plans - FIXED
+    //api: get meal plans 
     static class MealPlansHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
-            // ADD CORS headers
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Content-Type", "application/json");
             
@@ -361,10 +359,9 @@ public class WebServer {
         }
     }
     
-    // api: get ingredients - FIXED
+    // api: get ingredients
     static class IngredientsHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
-            // ADD CORS headers
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Content-Type", "application/json");
             
@@ -412,10 +409,9 @@ public class WebServer {
         }
     }
     
-    //api: get database stats - FIXED
+    //api: get database stats 
     static class StatsHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
-            // ADD CORS headers
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Content-Type", "application/json");
             
@@ -468,7 +464,7 @@ public class WebServer {
         }
     }
     
-    // api: get users - FIXED
+    // api: get users 
     static class UserHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
@@ -485,7 +481,6 @@ public class WebServer {
             
             try {
                 conn = DatabaseConnection.getConnection();
-                // NO PASSWORD FIELD - security!
                 String query = "SELECT user_id, name, email, diet_type, preferences, created_at " +
                               "FROM user ORDER BY user_id ASC LIMIT 50";
                 
