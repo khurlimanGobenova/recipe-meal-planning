@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function ShoppingListPage() {
+export default function ShoppingList() {
   const [lists, setLists] = useState([]);
 
   useEffect(() => {

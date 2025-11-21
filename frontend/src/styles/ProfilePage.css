@@ -1,0 +1,89 @@
+.profile-container {
+  padding: 40px;
+  background: #f7fafc;
+  min-height: 100vh;
+}
+
+.page-title {
+  color: #2f855a;
+  margin-bottom: 20px;
+}
+
+.profile-cards-wrapper {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.profile-card {
+  flex: 1 1 320px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.profile-card h2 {
+  color: #3182ce;
+  margin-bottom: 12px;
+}
+
+.profile-card p {
+  margin: 6px 0;
+  color: #4a5568;
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.password-form input {
+  padding: 10px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+}
+
+.password-form button {
+  padding: 12px;
+  background: #2f855a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.password-form button:hover {
+  background: #38a169;
+}
+
+.mealplan-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mealplan-item {
+  display: flex;
+  justify-content: space-between;
+  background: #edf2f7;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.mealplan-title {
+  font-weight: 600;
+  color: #2f855a;
+}
+
+.mealplan-dates {
+  color: #718096;
+}
+
+@media (max-width: 900px) {
+  .profile-cards-wrapper {
+    flex-direction: column;
+  }
+}

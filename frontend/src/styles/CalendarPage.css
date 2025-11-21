@@ -1,0 +1,51 @@
+.app-page-container {
+  padding: 40px;
+  background: #f7fafc;
+  min-height: 100vh;
+}
+
+.page-title {
+  color: #2f855a;
+  margin-bottom: 30px;
+}
+
+.calendar-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.calendar-day-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 280px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.calendar-header {
+  font-weight: bold;
+  color: #3182ce;
+  margin-bottom: 10px;
+}
+
+.meal-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.meal-item {
+  background: #edf2f7;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meal-item select {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+}

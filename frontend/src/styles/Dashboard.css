@@ -1,0 +1,57 @@
+.dashboard-container {
+  padding: 40px;
+  background: #f7fafc;
+  min-height: 100vh;
+}
+
+.page-title {
+  color: #2f855a;
+  margin-bottom: 30px;
+}
+
+.nutrition-section {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.chart-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin: 10px;
+}
+
+.meal-suggestions {
+  margin-top: 40px;
+}
+
+.meal-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.meal-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 220px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.meal-card h3 {
+  color: #3182ce;
+}
+
+.meal-card button {
+  margin-top: 10px;
+  padding: 10px;
+  background: #2f855a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
