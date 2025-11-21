@@ -1,7 +1,7 @@
 // src/pages/ProfilePage.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./ProfilePage.css";
+import "../styles/ProfilePage.css";
 
 export default function ProfilePage() {
   const [user, setUser] = useState({});

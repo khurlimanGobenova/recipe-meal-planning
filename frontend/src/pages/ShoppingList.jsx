@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-
+import "../styles/ShoppingList.css"
 export default function ShoppingList() {
   const [lists, setLists] = useState([]);
 

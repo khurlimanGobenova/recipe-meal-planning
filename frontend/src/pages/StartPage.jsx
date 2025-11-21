@@ -1,6 +1,5 @@
-// src/pages/StartPage.jsx
 import React, { useState } from "react";
-import "./StartPage.css"; // custom styling
+import "../styles/StartPage.css"; 
 
 const StartPage = () => {
   const [isLogin, setIsLogin] = useState(true);

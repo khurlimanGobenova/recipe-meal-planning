@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, Legend } from "recharts";
 import axios from "axios";
-import "./Dashboard.css";
+import "../styles/Dashboard.css";
 
 const Dashboard = () => {
   const [dailyNutrition, setDailyNutrition] = useState({});
