@@ -10,29 +10,25 @@ public class WebServer {
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
         
-        // Serve static files (HTML, CSS, JS)
         server.createContext("/", new StaticFileHandler());
         
-        // API endpoints
+        // api endpoints
         server.createContext("/api/recipes", new RecipesHandler());
         server.createContext("/api/recipe/", new RecipeDetailHandler());
         server.createContext("/api/search", new SearchHandler());
         server.createContext("/api/mealplans", new MealPlansHandler());
         server.createContext("/api/ingredients", new IngredientsHandler());
         server.createContext("/api/stats", new StatsHandler());
+        server.createContext("/api/users", new UserHandler()); // ADDED THIS LINE
         
         server.setExecutor(null);
         server.start();
         
-        System.out.println("╔════════════════════════════════════════════════╗");
-        System.out.println("║   HEAL MEAL WEB SERVER STARTED                 ║");
-        System.out.println("╠════════════════════════════════════════════════╣");
-        System.out.println("║ Server running at: http://localhost:" + PORT + "       ║");
-        System.out.println("║ Press Ctrl+C to stop the server                ║");
-        System.out.println("╚════════════════════════════════════════════════╝");
+        System.out.println("|| HEAL MEAL WEB SERVER STARTED ||");
+        System.out.println("Server running at: http://localhost:" + PORT + "");
     }
     
-    // Handler for static files (HTML, CSS, JS)
+    //Handler for static files (HTML, CSS, JS)
     static class StaticFileHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
@@ -77,27 +73,35 @@ public class WebServer {
         }
     }
     
-    // API: Get all recipes
+    // api: get all recipes - FIXED
     static class RecipesHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
+            // ADD CORS headers
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            
             if (!exchange.getRequestMethod().equals("GET")) {
-                sendResponse(exchange, 405, "{\"error\":\"Method not allowed\"}");
+                sendJsonResponse(exchange, 405, "{\"error\":\"Method not allowed\"}");
                 return;
             }
             
+            Connection conn = null;
+            Statement stmt = null;
+            ResultSet rs = null;
+            
             try {
-                Connection conn = DatabaseConnection.getConnection();
+                conn = DatabaseConnection.getConnection();
                 String query = "SELECT r.recipe_id, r.title, r.category, r.difficulty, " +
                               "(r.prep_time + r.cook_time) as total_time, " +
-                              "AVG(ra.rating) as avg_rating " +
+                              "COALESCE(AVG(ra.rating), 0) as avg_rating " +
                               "FROM recipe r " +
                               "LEFT JOIN rating ra ON r.recipe_id = ra.recipe_id " +
-                              "GROUP BY r.recipe_id " +
+                              "GROUP BY r.recipe_id, r.title, r.category, r.difficulty, r.prep_time, r.cook_time " +
                               "ORDER BY r.title " +
                               "LIMIT 50";
                 
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(query);
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery(query);
                 
                 StringBuilder json = new StringBuilder("[");
                 boolean first = true;
@@ -110,48 +114,60 @@ public class WebServer {
                     json.append("\"category\":\"").append(escapeJson(rs.getString("category"))).append("\",");
                     json.append("\"difficulty\":\"").append(escapeJson(rs.getString("difficulty"))).append("\",");
                     json.append("\"totalTime\":").append(rs.getInt("total_time")).append(",");
-                    json.append("\"rating\":").append(rs.getDouble("avg_rating"));
+                    json.append("\"rating\":").append(Math.round(rs.getDouble("avg_rating") * 10.0) / 10.0);
                     json.append("}");
                     first = false;
                 }
                 
                 json.append("]");
                 
-                rs.close();
-                stmt.close();
-                
                 sendJsonResponse(exchange, 200, json.toString());
+                System.out.println("✓ Served recipes list");
                 
             } catch (SQLException e) {
+                System.err.println("Database error: " + e.getMessage());
                 e.printStackTrace();
-                sendResponse(exchange, 500, "{\"error\":\"Database error: " + e.getMessage() + "\"}");
+                sendJsonResponse(exchange, 500, "{\"error\":\"Database error: " + escapeJson(e.getMessage()) + "\"}");
+            } finally {
+                DatabaseConnection.closeResources(conn, stmt, rs);
             }
         }
     }
     
-    // API: Get recipe details
+    // api: get recipe details - ALREADY FIXED
     static class RecipeDetailHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            
             String path = exchange.getRequestURI().getPath();
             String[] parts = path.split("/");
             
             if (parts.length < 4) {
-                sendResponse(exchange, 400, "{\"error\":\"Recipe ID required\"}");
+                sendJsonResponse(exchange, 400, "{\"error\":\"Recipe ID required\"}");
                 return;
             }
             
+            Connection conn = null;  
+            PreparedStatement pstmt = null;
+            ResultSet rs = null;
+            PreparedStatement ingStmt = null;
+            ResultSet ingRs = null;
+            PreparedStatement nutriStmt = null;
+            ResultSet nutriRs = null;
+            
             try {
                 int recipeId = Integer.parseInt(parts[3]);
-                Connection conn = DatabaseConnection.getConnection();
+                conn = DatabaseConnection.getConnection();
                 
                 // Get recipe info
                 String query = "SELECT * FROM recipe WHERE recipe_id = ?";
-                PreparedStatement pstmt = conn.prepareStatement(query);
+                pstmt = conn.prepareStatement(query);
                 pstmt.setInt(1, recipeId);
-                ResultSet rs = pstmt.executeQuery();
+                rs = pstmt.executeQuery();
                 
                 if (!rs.next()) {
-                    sendResponse(exchange, 404, "{\"error\":\"Recipe not found\"}");
+                    sendJsonResponse(exchange, 404, "{\"error\":\"Recipe not found\"}");
                     return;
                 }
                 
@@ -170,9 +186,9 @@ public class WebServer {
                                  "FROM recipeingredient ri " +
                                  "JOIN ingredient i ON ri.ingredient_id = i.ingredient_id " +
                                  "WHERE ri.recipe_id = ?";
-                PreparedStatement ingStmt = conn.prepareStatement(ingQuery);
+                ingStmt = conn.prepareStatement(ingQuery);
                 ingStmt.setInt(1, recipeId);
-                ResultSet ingRs = ingStmt.executeQuery();
+                ingRs = ingStmt.executeQuery();
                 
                 json.append("\"ingredients\":[");
                 boolean first = true;
@@ -197,9 +213,9 @@ public class WebServer {
                     "JOIN ingredient i ON ri.ingredient_id = i.ingredient_id " +
                     "JOIN recipe r ON ri.recipe_id = r.recipe_id " +
                     "WHERE ri.recipe_id = ?";
-                PreparedStatement nutriStmt = conn.prepareStatement(nutritionQuery);
+                nutriStmt = conn.prepareStatement(nutritionQuery);
                 nutriStmt.setInt(1, recipeId);
-                ResultSet nutriRs = nutriStmt.executeQuery();
+                nutriRs = nutriStmt.executeQuery();
                 
                 if (nutriRs.next()) {
                     json.append(",\"nutrition\":{");
@@ -212,45 +228,60 @@ public class WebServer {
                 
                 json.append("}");
                 
-                ingRs.close();
-                ingStmt.close();
-                nutriRs.close();
-                nutriStmt.close();
-                rs.close();
-                pstmt.close();
-                
                 sendJsonResponse(exchange, 200, json.toString());
+                System.out.println("✓ Served recipe #" + recipeId + " with ingredients and nutrition");
                 
             } catch (NumberFormatException e) {
-                sendResponse(exchange, 400, "{\"error\":\"Invalid recipe ID\"}");
+                sendJsonResponse(exchange, 400, "{\"error\":\"Invalid recipe ID\"}");
             } catch (SQLException e) {
+                System.err.println("Database error: " + e.getMessage());
                 e.printStackTrace();
-                sendResponse(exchange, 500, "{\"error\":\"Database error\"}");
+                sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
+            } finally {
+                try {
+                    if (rs != null) rs.close();
+                    if (pstmt != null) pstmt.close();
+                    if (ingRs != null) ingRs.close();
+                    if (ingStmt != null) ingStmt.close();
+                    if (nutriRs != null) nutriRs.close();
+                    if (nutriStmt != null) nutriStmt.close();
+                    if (conn != null) conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
     
-    // API: Search recipes
+    //api: search recipes - FIXED
     static class SearchHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
+            // ADD CORS headers
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            
             String query = exchange.getRequestURI().getQuery();
             if (query == null || !query.startsWith("q=")) {
-                sendResponse(exchange, 400, "{\"error\":\"Query parameter required\"}");
+                sendJsonResponse(exchange, 400, "{\"error\":\"Query parameter required\"}");
                 return;
             }
             
             String searchTerm = URLDecoder.decode(query.substring(2), "UTF-8");
             
+            Connection conn = null;
+            PreparedStatement pstmt = null;
+            ResultSet rs = null;
+            
             try {
-                Connection conn = DatabaseConnection.getConnection();
+                conn = DatabaseConnection.getConnection();
                 String sql = "SELECT recipe_id, title, category, difficulty FROM recipe " +
                             "WHERE title LIKE ? OR description LIKE ? " +
                             "ORDER BY title LIMIT 20";
                 
-                PreparedStatement pstmt = conn.prepareStatement(sql);
+                pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, "%" + searchTerm + "%");
                 pstmt.setString(2, "%" + searchTerm + "%");
-                ResultSet rs = pstmt.executeQuery();
+                rs = pstmt.executeQuery();
                 
                 StringBuilder json = new StringBuilder("[");
                 boolean first = true;
@@ -268,28 +299,37 @@ public class WebServer {
                 
                 json.append("]");
                 
-                rs.close();
-                pstmt.close();
-                
                 sendJsonResponse(exchange, 200, json.toString());
+                System.out.println("✓ Served search results for: " + searchTerm);
                 
             } catch (SQLException e) {
+                System.err.println("Database error: " + e.getMessage());
                 e.printStackTrace();
-                sendResponse(exchange, 500, "{\"error\":\"Database error\"}");
+                sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
+            } finally {
+                DatabaseConnection.closeResources(conn, pstmt, rs);
             }
         }
     }
     
-    // API: Get meal plans
+    //api: get meal plans - FIXED
     static class MealPlansHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
+            // ADD CORS headers
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            
+            Connection conn = null;
+            Statement stmt = null;
+            ResultSet rs = null;
+            
             try {
-                Connection conn = DatabaseConnection.getConnection();
+                conn = DatabaseConnection.getConnection();
                 String query = "SELECT mealplan_id, user_id, title, start_date, end_date " +
                               "FROM mealplan ORDER BY start_date DESC LIMIT 10";
                 
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(query);
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery(query);
                 
                 StringBuilder json = new StringBuilder("[");
                 boolean first = true;
@@ -308,28 +348,37 @@ public class WebServer {
                 
                 json.append("]");
                 
-                rs.close();
-                stmt.close();
-                
                 sendJsonResponse(exchange, 200, json.toString());
+                System.out.println("✓ Served meal plans list");
                 
             } catch (SQLException e) {
+                System.err.println("Database error: " + e.getMessage());
                 e.printStackTrace();
-                sendResponse(exchange, 500, "{\"error\":\"Database error\"}");
+                sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
+            } finally {
+                DatabaseConnection.closeResources(conn, stmt, rs);
             }
         }
     }
     
-    // API: Get ingredients
+    // api: get ingredients - FIXED
     static class IngredientsHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
+            // ADD CORS headers
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            
+            Connection conn = null;
+            Statement stmt = null;
+            ResultSet rs = null;
+            
             try {
-                Connection conn = DatabaseConnection.getConnection();
+                conn = DatabaseConnection.getConnection();
                 String query = "SELECT ingredient_id, name, unit, calories_per_unit, protein, fat, carbs " +
                               "FROM ingredient ORDER BY name LIMIT 50";
                 
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(query);
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery(query);
                 
                 StringBuilder json = new StringBuilder("[");
                 boolean first = true;
@@ -350,29 +399,38 @@ public class WebServer {
                 
                 json.append("]");
                 
-                rs.close();
-                stmt.close();
-                
                 sendJsonResponse(exchange, 200, json.toString());
+                System.out.println("✓ Served ingredients list");
                 
             } catch (SQLException e) {
+                System.err.println("Database error: " + e.getMessage());
                 e.printStackTrace();
-                sendResponse(exchange, 500, "{\"error\":\"Database error\"}");
+                sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
+            } finally {
+                DatabaseConnection.closeResources(conn, stmt, rs);
             }
         }
     }
     
-    // API: Get database stats
+    //api: get database stats - FIXED
     static class StatsHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
+            // ADD CORS headers
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            
+            Connection conn = null;
+            Statement stmt = null;
+            ResultSet rs = null;
+            
             try {
-                Connection conn = DatabaseConnection.getConnection();
-                Statement stmt = conn.createStatement();
+                conn = DatabaseConnection.getConnection();
+                stmt = conn.createStatement();
                 
                 StringBuilder json = new StringBuilder("{");
                 
                 // Count recipes
-                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) as count FROM recipe");
+                rs = stmt.executeQuery("SELECT COUNT(*) as count FROM recipe");
                 if (rs.next()) {
                     json.append("\"totalRecipes\":").append(rs.getInt("count")).append(",");
                 }
@@ -397,14 +455,70 @@ public class WebServer {
                 
                 json.append("}");
                 
-                rs.close();
-                stmt.close();
-                
                 sendJsonResponse(exchange, 200, json.toString());
+                System.out.println("✓ Served database stats");
                 
             } catch (SQLException e) {
+                System.err.println("Database error: " + e.getMessage());
                 e.printStackTrace();
-                sendResponse(exchange, 500, "{\"error\":\"Database error\"}");
+                sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
+            } finally {
+                DatabaseConnection.closeResources(conn, stmt, rs);
+            }
+        }
+    }
+    
+    // api: get users - FIXED
+    static class UserHandler implements HttpHandler {
+        public void handle(HttpExchange exchange) throws IOException {
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Content-Type", "application/json");
+            
+            if (!exchange.getRequestMethod().equals("GET")) {
+                sendJsonResponse(exchange, 405, "{\"error\":\"Method not allowed\"}");
+                return;
+            }
+            
+            Connection conn = null;
+            Statement stmt = null;
+            ResultSet rs = null;
+            
+            try {
+                conn = DatabaseConnection.getConnection();
+                // NO PASSWORD FIELD - security!
+                String query = "SELECT user_id, name, email, diet_type, preferences, created_at " +
+                              "FROM user ORDER BY user_id ASC LIMIT 50";
+                
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery(query);
+                
+                StringBuilder json = new StringBuilder("[");
+                boolean first = true;
+                
+                while (rs.next()) {
+                    if (!first) json.append(",");
+                    json.append("{");
+                    json.append("\"id\":").append(rs.getInt("user_id")).append(",");
+                    json.append("\"name\":\"").append(escapeJson(rs.getString("name"))).append("\",");
+                    json.append("\"email\":\"").append(escapeJson(rs.getString("email"))).append("\",");
+                    json.append("\"diet_type\":\"").append(escapeJson(rs.getString("diet_type"))).append("\",");
+                    json.append("\"preferences\":\"").append(escapeJson(rs.getString("preferences"))).append("\",");
+                    json.append("\"created_at\":\"").append(rs.getDate("created_at")).append("\"");
+                    json.append("}");
+                    first = false;
+                }
+                
+                json.append("]");
+                
+                sendJsonResponse(exchange, 200, json.toString());
+                System.out.println("✓ Served users list");
+                
+            } catch (SQLException e) {
+                System.err.println("Database error: " + e.getMessage());
+                e.printStackTrace();
+                sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
+            } finally {
+                DatabaseConnection.closeResources(conn, stmt, rs);
             }
         }
     }
