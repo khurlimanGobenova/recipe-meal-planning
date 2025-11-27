@@ -124,6 +124,18 @@
   min-width: 180px;
   text-align: center;
 }
+.nutrition-charts {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.chart-container {
+  text-align: center;
+  margin: 1rem;
+}
+
 
 /* Calendar Grid */
 .calendar-grid {
