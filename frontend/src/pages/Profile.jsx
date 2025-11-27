@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PieChart, Pie, Cell, Legend } from "recharts";   // ✅ Import Recharts
 import '../styles/Profile.css';
 
 function Profile() {
@@ -16,12 +17,20 @@ function Profile() {
   const [mealPlans, setMealPlans] = useState([]);
 
   useEffect(() => {
-    // Fetch meal plans for calendar
     fetch('http://localhost:8080/api/mealplans')
       .then(res => res.json())
       .then(data => setMealPlans(data))
       .catch(err => console.error('Error:', err));
   }, []);
+
+  const COLORS = ["#2f855a", "#3182ce", "#d69e2e", "#e53e3e"];
+
+  const nutritionData = [
+    { name: "Calories", value: user.calorieGoal },
+    { name: "Protein", value: user.proteinGoal },
+    { name: "Carbs", value: user.carbsGoal },
+    { name: "Fats", value: user.fatsGoal },
+  ];
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -30,11 +39,9 @@ function Profile() {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
     const days = [];
-    // Empty cells for days before month starts
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
-    // Days of the month
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i);
     }
@@ -85,46 +92,67 @@ function Profile() {
             <button className="btn btn-secondary mt-2">Edit Profile</button>
           </div>
 
-          {/* Nutrition Goals Card */}
-          <div className="card nutrition-goals">
-            <h2>Daily Nutrition Goals</h2>
-            <div className="goal-item">
-              <div className="goal-label">
-                <span>Calories</span>
-                <span className="goal-value">{user.calorieGoal} kcal</span>
-              </div>
-              <div className="goal-bar">
-                <div className="goal-progress" style={{width: '75%'}}></div>
-              </div>
-            </div>
-            <div className="goal-item">
-              <div className="goal-label">
-                <span>Protein</span>
-                <span className="goal-value">{user.proteinGoal}g</span>
-              </div>
-              <div className="goal-bar">
-                <div className="goal-progress" style={{width: '60%'}}></div>
-              </div>
-            </div>
-            <div className="goal-item">
-              <div className="goal-label">
-                <span>Carbs</span>
-                <span className="goal-value">{user.carbsGoal}g</span>
-              </div>
-              <div className="goal-bar">
-                <div className="goal-progress" style={{width: '80%'}}></div>
-              </div>
-            </div>
-            <div className="goal-item">
-              <div className="goal-label">
-                <span>Fats</span>
-                <span className="goal-value">{user.fatsGoal}g</span>
-              </div>
-              <div className="goal-bar">
-                <div className="goal-progress" style={{width: '70%'}}></div>
-              </div>
-            </div>
-          </div>
+          {/* Nutrition Goals Card - REPLACED with PieChart */}
+          {/* Nutrition Goals Card - Daily & Weekly */}
+<div className="card nutrition-goals">
+  <h2>Nutrition Goals</h2>
+  <div className="nutrition-charts">
+    {/* Daily Goals */}
+    <div className="chart-container">
+      <h3>Daily Goals</h3>
+      <PieChart width={300} height={300}>
+        <Pie
+          data={[
+            { name: "Calories", value: user.calorieGoal },
+            { name: "Protein", value: user.proteinGoal },
+            { name: "Carbs", value: user.carbsGoal },
+            { name: "Fats", value: user.fatsGoal },
+          ]}
+          cx={150}
+          cy={150}
+          innerRadius={60}
+          outerRadius={100}
+          paddingAngle={5}
+          dataKey="value"
+        >
+          <Cell fill="#2f855a" /> {/* Calories */}
+          <Cell fill="#3182ce" /> {/* Protein */}
+          <Cell fill="#d69e2e" /> {/* Carbs */}
+          <Cell fill="#e53e3e" /> {/* Fats */}
+        </Pie>
+        <Legend />
+      </PieChart>
+    </div>
+
+    {/* Weekly Goals */}
+    <div className="chart-container">
+      <h3>Weekly Goals</h3>
+      <PieChart width={300} height={300}>
+        <Pie
+          data={[
+            { name: "Calories", value: user.calorieGoal * 7 },
+            { name: "Protein", value: user.proteinGoal * 7 },
+            { name: "Carbs", value: user.carbsGoal * 7 },
+            { name: "Fats", value: user.fatsGoal * 7 },
+          ]}
+          cx={150}
+          cy={150}
+          innerRadius={60}
+          outerRadius={100}
+          paddingAngle={5}
+          dataKey="value"
+        >
+          <Cell fill="#2f855a" /> {/* Calories */}
+          <Cell fill="#3182ce" /> {/* Protein */}
+          <Cell fill="#d69e2e" /> {/* Carbs */}
+          <Cell fill="#e53e3e" /> {/* Fats */}
+        </Pie>
+        <Legend />
+      </PieChart>
+    </div>
+  </div>
+</div>
+
         </div>
 
         {/* Calendar Section */}
