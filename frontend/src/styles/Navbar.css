@@ -1,61 +1,120 @@
-/* src/components/Navbar.css */
-
 .navbar {
-  background: #2f855a; /* green theme */
-  padding: 15px 30px;
-  color: white;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 100;
 }
 
 .navbar-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
 }
 
-.navbar-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #f0fff4;
-}
-
-.nav-links {
+.navbar-brand {
   display: flex;
-  gap: 20px;
-}
-
-.nav-button {
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
   text-decoration: none;
-  padding: 8px 14px;
+}
+
+.logo {
+  font-size: 1.5rem;
+}
+
+.brand-text {
+  color: var(--primary);
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  padding: 0.5rem 1rem;
+  color: var(--text-light);
+  text-decoration: none;
   border-radius: 6px;
-  font-size: 1rem;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: all 0.2s;
+  font-weight: 500;
 }
 
-.nav-button-inactive {
-  color: #f0fff4;
+.nav-link:hover {
+  color: var(--text);
+  background: var(--bg-light);
 }
 
-.nav-button-active {
-  background: #38a169;
+.nav-link.active {
+  color: var(--primary);
+  background: var(--bg-light);
+}
+
+/* User Section */
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--border);
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.btn-logout {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-light);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: var(--error);
   color: white;
-  font-weight: bold;
+  border-color: var(--error);
 }
 
-.nav-button:hover {
-  background: #48bb78;
-  color: white;
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
-  .nav-links {
-    flex-direction: column;
-    gap: 10px;
-    background: #276749;
-    padding: 10px;
-    border-radius: 8px;
+  .navbar-links {
+    gap: 0.25rem;
+  }
+  
+  .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .brand-text {
+    display: none;
+  }
+  
+  .navbar-user {
+    margin-left: 0.5rem;
+    padding-left: 0.5rem;
+  }
+  
+  .user-name {
+    display: none;
+  }
+  
+  .btn-logout {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
   }
 }

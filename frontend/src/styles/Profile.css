@@ -1,0 +1,235 @@
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Profile Info Card */
+.profile-info h2 {
+  margin-bottom: 1.5rem;
+}
+
+.info-group {
+  margin-bottom: 1.5rem;
+}
+
+.info-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 0.25rem;
+}
+
+.info-group p {
+  font-size: 1rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.diet-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  text-transform: capitalize;
+}
+
+/* Nutrition Goals */
+.nutrition-goals h2 {
+  margin-bottom: 1.5rem;
+}
+
+.goal-item {
+  margin-bottom: 1.5rem;
+}
+
+.goal-item:last-child {
+  margin-bottom: 0;
+}
+
+.goal-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.goal-label span:first-child {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.goal-value {
+  color: var(--text-light);
+}
+
+.goal-bar {
+  height: 8px;
+  background: var(--bg-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.goal-progress {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.3s;
+}
+
+/* Calendar Section */
+.calendar-section {
+  margin-top: 2rem;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.calendar-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: var(--bg-light);
+  border-color: var(--primary);
+}
+
+.current-month {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 180px;
+  text-align: center;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  padding: 0.5rem;
+  text-transform: uppercase;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day:not(.empty):hover {
+  background: var(--bg-light);
+  border-color: var(--primary);
+}
+
+.calendar-day.empty {
+  border-color: transparent;
+  cursor: default;
+}
+
+.day-number {
+  font-size: 0.875rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.calendar-day.has-meal-plan {
+  background: #e8f5e9;
+  border-color: var(--primary);
+}
+
+.meal-indicator {
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
+
+.calendar-legend {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-light);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-dot.has-plan {
+  background: var(--primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .calendar-controls {
+    gap: 0.5rem;
+  }
+  
+  .current-month {
+    font-size: 1rem;
+    min-width: 140px;
+  }
+  
+  .calendar-day {
+    padding: 0.25rem;
+  }
+  
+  .day-number {
+    font-size: 0.75rem;
+  }
+  
+  .meal-indicator {
+    font-size: 0.875rem;
+  }
+}
