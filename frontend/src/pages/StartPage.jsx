@@ -1,9 +1,11 @@
-// src/components/StartPage.jsx
+// src/pages/StartPage.jsx
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/StartPage.css";
 
-const StartPage = ({ setIsAuthenticated }) => {
+const StartPage = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,9 +22,6 @@ const StartPage = ({ setIsAuthenticated }) => {
     diet_type: "",
   });
 
-  // Base URL for backend
-  const API_BASE = "http://localhost:8080/api/users";
-
   // ============================
   // LOGIN
   // ============================
@@ -32,20 +31,48 @@ const StartPage = ({ setIsAuthenticated }) => {
     setLoading(true);
 
     try {
-      const res = await axios.post(`${API_BASE}/login`, loginData);
+      console.log('Attempting login with:', loginData.email);
+      
+      // POST to backend login endpoint
+      const response = await axios.post('http://localhost:8080/api/users/login', {
+        email: loginData.email,
+        password: loginData.password
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
-      if (!res.data.userId) {
-        setError("Login failed. No userId returned.");
+      console.log('Login response:', response.data);
+
+      // Check if userId is returned
+      if (response.data && response.data.userId) {
+        // Store user data in localStorage
+        localStorage.setItem('userId', response.data.userId);
+        localStorage.setItem('isAuthenticated', 'true');
+        
+        // Store full user data if available
+        if (response.data.name || loginData.email) {
+          localStorage.setItem('user', JSON.stringify({
+            id: response.data.userId,
+            name: response.data.name,
+            email: loginData.email
+          }));
+        }
+        
+        console.log('Login successful, redirecting to /home');
+        navigate('/home');
       } else {
-        localStorage.setItem("userId", res.data.userId);
-        setIsAuthenticated(true);
+        setError('Login failed. No user ID returned.');
       }
     } catch (err) {
-      console.error(err);
-      const message =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        "Invalid email or password.";
+      console.error('Login error:', err);
+      console.error('Error response:', err.response);
+      
+      const message = err.response?.data?.error || 
+                     err.response?.data?.message || 
+                     err.message ||
+                     'Invalid email or password';
       setError(message);
     } finally {
       setLoading(false);
@@ -61,20 +88,47 @@ const StartPage = ({ setIsAuthenticated }) => {
     setLoading(true);
 
     try {
-      const res = await axios.post(`${API_BASE}/signup`, signupData);
+      console.log('Attempting signup with:', signupData.email);
+      
+      // POST to backend signup endpoint
+      const response = await axios.post('http://localhost:8080/api/users/signup', {
+        name: signupData.name,
+        email: signupData.email,
+        password: signupData.password,
+        diet_type: signupData.diet_type
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
-      if (!res.data.userId) {
-        setError("Signup failed. No userId returned.");
+      console.log('Signup response:', response.data);
+
+      // Check if userId is returned
+      if (response.data && response.data.userId) {
+        // Store user data in localStorage
+        localStorage.setItem('userId', response.data.userId);
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('user', JSON.stringify({
+          id: response.data.userId,
+          name: signupData.name,
+          email: signupData.email,
+          diet_type: signupData.diet_type
+        }));
+        
+        console.log('Signup successful, redirecting to /home');
+        navigate('/home');
       } else {
-        localStorage.setItem("userId", res.data.userId);
-        setIsAuthenticated(true);
+        setError('Signup failed. No user ID returned.');
       }
     } catch (err) {
-      console.error(err);
-      const message =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        "Registration failed.";
+      console.error('Signup error:', err);
+      console.error('Error response:', err.response);
+      
+      const message = err.response?.data?.error || 
+                     err.response?.data?.message || 
+                     err.message ||
+                     'Registration failed. Please try again.';
       setError(message);
     } finally {
       setLoading(false);
@@ -93,18 +147,25 @@ const StartPage = ({ setIsAuthenticated }) => {
         <div className="auth-toggle">
           <button
             className={isLogin ? "active" : ""}
-            onClick={() => setIsLogin(true)}
+            onClick={() => {
+              setIsLogin(true);
+              setError("");
+            }}
           >
             Login
           </button>
           <button
             className={!isLogin ? "active" : ""}
-            onClick={() => setIsLogin(false)}
+            onClick={() => {
+              setIsLogin(false);
+              setError("");
+            }}
           >
             Sign Up
           </button>
         </div>
 
+        {/* Error Message */}
         {error && <div className="auth-error">{error}</div>}
 
         {isLogin ? (
