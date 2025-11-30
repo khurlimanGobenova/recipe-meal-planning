@@ -124,6 +124,7 @@
   min-width: 180px;
   text-align: center;
 }
+
 .nutrition-charts {
   display: flex;
   justify-content: space-around;
@@ -218,30 +219,162 @@
   background: var(--primary);
 }
 
-/* Responsive */
+/* Goals Edit Form */
+.goals-edit-form {
+  padding: 1rem;
+  background: var(--bg-light, #f8f9fa);
+  border-radius: 8px;
+}
+
+.goals-edit-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.goals-edit-form label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text, #333);
+  margin-bottom: 0.5rem;
+}
+
+.goals-edit-form input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border, #ddd);
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.goals-edit-form input:focus {
+  outline: none;
+  border-color: var(--primary, #2f855a);
+}
+
+.weekly-preview {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid var(--border, #ddd);
+}
+
+.weekly-preview p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--text, #333);
+}
+
+.weekly-preview p:first-child {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+/* Goals Summary */
+.goals-summary {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-light, #f8f9fa);
+  border-radius: 6px;
+  text-align: left;
+}
+
+.goals-summary p {
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text, #333);
+}
+
+/* Nutrition Charts Container */
+.nutrition-charts {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  gap: 2rem;
+}
+
+.chart-container {
+  flex: 1;
+  min-width: 280px;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.chart-container h3 {
+  margin-bottom: 1rem;
+  color: var(--text, #333);
+  font-size: 1.125rem;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--primary, #2f855a);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #276749;
+}
+
+.btn-secondary {
+  background: var(--bg-light, #e2e8f0);
+  color: var(--text, #333);
+}
+
+.btn-secondary:hover {
+  background: #cbd5e0;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .profile-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .calendar-controls {
     gap: 0.5rem;
   }
-  
+
   .current-month {
     font-size: 1rem;
     min-width: 140px;
   }
-  
+
   .calendar-day {
     padding: 0.25rem;
   }
-  
+
   .day-number {
     font-size: 0.75rem;
   }
-  
+
   .meal-indicator {
     font-size: 0.875rem;
+  }
+
+  .nutrition-charts {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-container {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .goals-edit-form {
+    padding: 0.75rem;
   }
 }
