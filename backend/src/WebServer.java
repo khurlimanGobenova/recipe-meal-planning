@@ -1,7 +1,5 @@
-import com.sun.net.httpserver.*;
 import java.io.*;
 import java.net.*;
-import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,20 +10,16 @@ import com.sun.net.httpserver.HttpExchange;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.sql.PreparedStatement; // Needed for Sign Up logic
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class WebServer {
 
     private static final int PORT = 8080;
 
-    private static final String CORS_ORIGIN = "http://localhost:5173"; // Change this to match your frontend port
+    private static final String CORS_ORIGIN = "http://localhost:3000"; // Change this to match your frontend port
 
-    // THEN CREATE THIS HELPER METHOD to set CORS consistently everywhere
     private static void setCorsHeaders(HttpExchange exchange) {
         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", CORS_ORIGIN);
         exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -36,26 +30,51 @@ public class WebServer {
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
 
-        server.createContext("/", new StaticFileHandler());
+        // server.createContext("/api/users/change-password", new UserHandler());
+        // server.createContext("/api/users/login", new UserHandler());
+        // server.createContext("/api/users/signup", new UserHandler());
+        // server.createContext("/api/users/", new UserDetailHandler());
+        // server.createContext("/api/users", new UserHandler());
+        // server.createContext("/api/recipes", new RecipesHandler());
+        // server.createContext("/api/recipe/", new RecipeDetailHandler());
+        // server.createContext("/api/search", new SearchHandler());
+        // server.createContext("/api/mealplans", new MealPlansHandler());
+        // server.createContext("/api/ingredients", new IngredientsHandler());
+        // server.createContext("/api/stats", new StatsHandler());
+        // server.createContext("/api/health-goals", new HealthGoalsHandler());
+        // server.createContext("/", new StaticFileHandler());
 
-        // api endpoints
+        // USER AUTH
+        server.createContext("/api/users/login", new UserHandler());
+        server.createContext("/api/users/signup", new UserHandler());
+        server.createContext("/api/users/change-password", new UserHandler());
+
+        // USERS LIST + CREATE
+        server.createContext("/api/users", new UserHandler());
+
+        // USER DETAILS (like /api/users/1)
+        server.createContext("/api/users/", new UserDetailHandler());
+
+        // RECIPES
         server.createContext("/api/recipes", new RecipesHandler());
-        server.createContext("/api/recipe/", new RecipeDetailHandler());
+        server.createContext("/api/recipes/", new RecipeDetailHandler()); // <-- fixed
+
+        // OTHER
         server.createContext("/api/search", new SearchHandler());
         server.createContext("/api/mealplans", new MealPlansHandler());
         server.createContext("/api/ingredients", new IngredientsHandler());
         server.createContext("/api/stats", new StatsHandler());
-        server.createContext("/api/users", new UserHandler()); // ADDED THIS LINE
+        server.createContext("/api/health-goals", new HealthGoalsHandler());
+
+        server.createContext("/", new StaticFileHandler());
 
         server.setExecutor(null);
         server.start();
 
         System.out.println("|| HEAL MEAL WEB SERVER STARTED ||");
         System.out.println("Server running at: http://localhost:" + PORT + "");
-
     }
 
-    // Handler for static files (HTML, CSS, JS)
     static class StaticFileHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
@@ -106,15 +125,10 @@ public class WebServer {
         }
     }
 
-    // api: get all recipes - FIXED
-    // Replace your RecipesHandler with this:
-
     static class RecipesHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
-            // USE THE HELPER METHOD for consistent CORS
             setCorsHeaders(exchange);
 
-            // Handle OPTIONS
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(204, -1);
                 exchange.close();
@@ -176,12 +190,10 @@ public class WebServer {
         }
     }
 
-    // api: get recipe details
     static class RecipeDetailHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
             setCorsHeaders(exchange);
 
-            // Add this for POST/PUT/DELETE handlers:
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(204, -1);
                 exchange.close();
@@ -310,12 +322,10 @@ public class WebServer {
         }
     }
 
-    // api: search recipes
     static class SearchHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
             setCorsHeaders(exchange);
 
-            // Add this for POST/PUT/DELETE handlers:
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(204, -1);
                 exchange.close();
@@ -375,12 +385,10 @@ public class WebServer {
         }
     }
 
-    // api: get meal plans
     static class MealPlansHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
             setCorsHeaders(exchange);
 
-            // Add this for POST/PUT/DELETE handlers:
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(204, -1);
                 exchange.close();
@@ -430,12 +438,10 @@ public class WebServer {
         }
     }
 
-    // api: get ingredients
     static class IngredientsHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
             setCorsHeaders(exchange);
 
-            // Add this for POST/PUT/DELETE handlers:
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(204, -1);
                 exchange.close();
@@ -487,12 +493,10 @@ public class WebServer {
         }
     }
 
-    // api: get database stats
     static class StatsHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
             setCorsHeaders(exchange);
 
-            // Add this for POST/PUT/DELETE handlers:
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(204, -1);
                 exchange.close();
@@ -548,29 +552,24 @@ public class WebServer {
         }
     }
 
-    // api: get users
-    // api: get users
-    // Replace your UserHandler class with this fixed version
-
     static class UserHandler implements HttpHandler {
         public void handle(HttpExchange exchange) throws IOException {
-
-            // USE THE HELPER METHOD
+            System.out.println("🔥🔥🔥 UserDetailHandler CALLED - Path: " + exchange.getRequestURI().getPath());
+            System.out.println("🔥 Method: " + exchange.getRequestMethod());
             setCorsHeaders(exchange);
 
             String requestMethod = exchange.getRequestMethod();
             String path = exchange.getRequestURI().getPath();
 
-            System.out.println("📥 Received " + requestMethod + " request to: " + path);
+            System.out.println("🔥 UserHandler - Received " + requestMethod + " request to: " + path);
 
-            // Handle OPTIONS (Pre-flight)
             if ("OPTIONS".equalsIgnoreCase(requestMethod)) {
                 exchange.sendResponseHeaders(204, -1);
                 exchange.close();
                 return;
             }
 
-            // HANDLE POST REQUESTS (LOGIN / SIGNUP)
+            // POST requests (login, signup, change-password)
             if ("POST".equalsIgnoreCase(requestMethod)) {
                 String requestBody;
                 try (BufferedReader reader = new BufferedReader(
@@ -580,15 +579,14 @@ public class WebServer {
 
                 System.out.println("📦 Request body: " + requestBody);
 
-                // LOGIN ENDPOINT
+                // LOGIN
                 if (path.contains("/login")) {
                     Map<String, String> data = parseJson(requestBody);
                     String email = data.get("email");
                     String password = data.get("password");
 
                     if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
-                        sendJsonResponse(exchange, 400,
-                                "{\"error\":\"Missing email or password\"}");
+                        sendJsonResponse(exchange, 400, "{\"error\":\"Missing email or password\"}");
                         return;
                     }
 
@@ -598,40 +596,43 @@ public class WebServer {
 
                     try {
                         conn = DatabaseConnection.getConnection();
-                        String query = "SELECT user_id, name FROM user WHERE email = ? AND password = ?";
+                        String query = "SELECT user_id, name, email, diet_type FROM user WHERE email = ? AND password = ?";
                         pstmt = conn.prepareStatement(query);
                         pstmt.setString(1, email);
                         pstmt.setString(2, password);
-
                         rs = pstmt.executeQuery();
 
                         if (rs.next()) {
                             int userId = rs.getInt("user_id");
                             String userName = rs.getString("name");
+                            String userEmail = rs.getString("email");
+                            String dietType = rs.getString("diet_type");
 
                             System.out.println("✅ User logged in: " + email + " (ID: " + userId + ")");
 
+                            // IMPORTANT: Include ALL user data in the response
                             String response = String.format(
-                                    "{\"userId\":%d,\"name\":\"%s\",\"message\":\"Login successful\"}",
-                                    userId, escapeJson(userName));
+                                    "{\"userId\":%d,\"name\":\"%s\",\"email\":\"%s\",\"diet_type\":\"%s\",\"message\":\"Login successful\"}",
+                                    userId,
+                                    escapeJson(userName),
+                                    escapeJson(userEmail),
+                                    escapeJson(dietType != null ? dietType : "none"));
                             sendJsonResponse(exchange, 200, response);
                         } else {
                             System.out.println("❌ Login failed for: " + email);
-                            sendJsonResponse(exchange, 401,
-                                    "{\"error\":\"Invalid email or password\"}");
+                            sendJsonResponse(exchange, 401, "{\"error\":\"Invalid email or password\"}");
                         }
                     } catch (SQLException e) {
                         System.err.println("❌ Login database error: " + e.getMessage());
                         e.printStackTrace();
-                        sendJsonResponse(exchange, 500,
-                                "{\"error\":\"Database error during login\"}");
+                        sendJsonResponse(exchange, 500, "{\"error\":\"Database error during login\"}");
                     } finally {
                         DatabaseConnection.closeResources(conn, pstmt, rs);
                     }
                     return;
                 }
 
-                // SIGNUP ENDPOINT
+                // SIGNUP
                 else if (path.contains("/signup")) {
                     Map<String, String> data = parseJson(requestBody);
                     String name = data.get("name");
@@ -641,8 +642,7 @@ public class WebServer {
 
                     if (name == null || email == null || password == null || dietType == null ||
                             name.isEmpty() || email.isEmpty() || password.isEmpty() || dietType.isEmpty()) {
-                        sendJsonResponse(exchange, 400,
-                                "{\"error\":\"All fields are required\"}");
+                        sendJsonResponse(exchange, 400, "{\"error\":\"All fields are required\"}");
                         return;
                     }
 
@@ -653,24 +653,18 @@ public class WebServer {
                     try {
                         conn = DatabaseConnection.getConnection();
 
-                        // Check if email already exists
                         String checkQuery = "SELECT user_id FROM user WHERE email = ?";
                         pstmt = conn.prepareStatement(checkQuery);
                         pstmt.setString(1, email);
                         rs = pstmt.executeQuery();
 
                         if (rs.next()) {
-                            sendJsonResponse(exchange, 409,
-                                    "{\"error\":\"Email already registered\"}");
+                            sendJsonResponse(exchange, 409, "{\"error\":\"Email already registered\"}");
                             return;
                         }
-
-                        // Close previous statement
                         pstmt.close();
 
-                        // Insert new user
-                        String insertQuery = "INSERT INTO user (name, email, password, diet_type, created_at) " +
-                                "VALUES (?, ?, ?, ?, NOW())";
+                        String insertQuery = "INSERT INTO user (name, email, password, diet_type, created_at) VALUES (?, ?, ?, ?, NOW())";
                         pstmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
                         pstmt.setString(1, name);
                         pstmt.setString(2, email);
@@ -686,28 +680,82 @@ public class WebServer {
                                 System.out.println("✅ User registered: " + email + " (ID: " + userId + ")");
 
                                 String response = String.format(
-                                        "{\"userId\":%d,\"message\":\"Registration successful\"}",
-                                        userId);
+                                        "{\"userId\":%d,\"name\":\"%s\",\"email\":\"%s\",\"diet_type\":\"%s\",\"message\":\"Registration successful\"}",
+                                        userId,
+                                        escapeJson(name),
+                                        escapeJson(email),
+                                        escapeJson(dietType));
                                 sendJsonResponse(exchange, 201, response);
                             } else {
-                                sendJsonResponse(exchange, 500,
-                                        "{\"error\":\"Failed to get user ID\"}");
+                                sendJsonResponse(exchange, 500, "{\"error\":\"Failed to get user ID\"}");
                             }
                         } else {
-                            sendJsonResponse(exchange, 500,
-                                    "{\"error\":\"Registration failed\"}");
+                            sendJsonResponse(exchange, 500, "{\"error\":\"Registration failed\"}");
                         }
                     } catch (SQLException e) {
                         System.err.println("❌ Signup database error: " + e.getMessage());
                         e.printStackTrace();
 
                         if (e.getMessage().contains("Duplicate entry")) {
-                            sendJsonResponse(exchange, 409,
-                                    "{\"error\":\"Email already registered\"}");
+                            sendJsonResponse(exchange, 409, "{\"error\":\"Email already registered\"}");
                         } else {
-                            sendJsonResponse(exchange, 500,
-                                    "{\"error\":\"Database error during registration\"}");
+                            sendJsonResponse(exchange, 500, "{\"error\":\"Database error during registration\"}");
                         }
+                    } finally {
+                        DatabaseConnection.closeResources(conn, pstmt, rs);
+                    }
+                    return;
+                }
+
+                // CHANGE PASSWORD
+                else if (path.contains("/change-password")) {
+                    Map<String, String> data = parseJson(requestBody);
+                    String userId = data.get("userId");
+                    String currentPassword = data.get("currentPassword");
+                    String newPassword = data.get("newPassword");
+
+                    if (userId == null || currentPassword == null || newPassword == null ||
+                            userId.isEmpty() || currentPassword.isEmpty() || newPassword.isEmpty()) {
+                        sendJsonResponse(exchange, 400, "{\"error\":\"All fields are required\"}");
+                        return;
+                    }
+
+                    Connection conn = null;
+                    PreparedStatement pstmt = null;
+                    ResultSet rs = null;
+
+                    try {
+                        conn = DatabaseConnection.getConnection();
+
+                        String checkQuery = "SELECT user_id FROM user WHERE user_id = ? AND password = ?";
+                        pstmt = conn.prepareStatement(checkQuery);
+                        pstmt.setInt(1, Integer.parseInt(userId));
+                        pstmt.setString(2, currentPassword);
+                        rs = pstmt.executeQuery();
+
+                        if (!rs.next()) {
+                            sendJsonResponse(exchange, 401, "{\"error\":\"Current password is incorrect\"}");
+                            return;
+                        }
+                        pstmt.close();
+
+                        String updateQuery = "UPDATE user SET password = ? WHERE user_id = ?";
+                        pstmt = conn.prepareStatement(updateQuery);
+                        pstmt.setString(1, newPassword);
+                        pstmt.setInt(2, Integer.parseInt(userId));
+
+                        int rowsAffected = pstmt.executeUpdate();
+
+                        if (rowsAffected > 0) {
+                            System.out.println("✅ Password changed for user ID: " + userId);
+                            sendJsonResponse(exchange, 200, "{\"message\":\"Password changed successfully\"}");
+                        } else {
+                            sendJsonResponse(exchange, 500, "{\"error\":\"Failed to change password\"}");
+                        }
+                    } catch (SQLException e) {
+                        System.err.println("❌ Password change error: " + e.getMessage());
+                        e.printStackTrace();
+                        sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
                     } finally {
                         DatabaseConnection.closeResources(conn, pstmt, rs);
                     }
@@ -720,7 +768,7 @@ public class WebServer {
                 }
             }
 
-            // HANDLE GET REQUESTS
+            // GET /api/users - List all users
             else if ("GET".equalsIgnoreCase(requestMethod)) {
                 Connection conn = null;
                 Statement stmt = null;
@@ -728,8 +776,7 @@ public class WebServer {
 
                 try {
                     conn = DatabaseConnection.getConnection();
-                    String query = "SELECT user_id, name, email, diet_type, created_at " +
-                            "FROM user ORDER BY user_id ASC LIMIT 50";
+                    String query = "SELECT user_id, name, email, diet_type, created_at FROM user ORDER BY user_id ASC LIMIT 50";
 
                     stmt = conn.createStatement();
                     rs = stmt.executeQuery(query);
@@ -752,7 +799,6 @@ public class WebServer {
 
                     sendJsonResponse(exchange, 200, json.toString());
                     System.out.println("✅ Served users list");
-
                 } catch (SQLException e) {
                     System.err.println("Database error: " + e.getMessage());
                     e.printStackTrace();
@@ -769,8 +815,359 @@ public class WebServer {
         }
     }
 
-    // Replace the sendJsonResponse and parseJson methods at the bottom of
-    // WebServer.java
+    static class UserDetailHandler implements HttpHandler {
+        public void handle(HttpExchange exchange) throws IOException {
+            System.out.println("🔥🔥🔥 UserDetailHandler CALLED - Path: " + exchange.getRequestURI().getPath());
+            setCorsHeaders(exchange);
+
+            String requestMethod = exchange.getRequestMethod();
+            String path = exchange.getRequestURI().getPath();
+
+            System.out.println("🔥 UserDetailHandler - Received " + requestMethod + " request to: " + path);
+
+            if ("OPTIONS".equalsIgnoreCase(requestMethod)) {
+                exchange.sendResponseHeaders(204, -1);
+                exchange.close();
+                return;
+            }
+
+            // Extract user ID from path
+            String[] parts = path.split("/");
+            if (parts.length < 4) {
+                sendJsonResponse(exchange, 400, "{\"error\":\"User ID required\"}");
+                return;
+            }
+
+            int userId;
+            try {
+                userId = Integer.parseInt(parts[3]);
+                System.out.println("👤 Extracted user ID: " + userId);
+            } catch (NumberFormatException e) {
+                sendJsonResponse(exchange, 400, "{\"error\":\"Invalid user ID\"}");
+                return;
+            }
+
+            if ("GET".equalsIgnoreCase(requestMethod)) {
+                Connection conn = null;
+                PreparedStatement pstmt = null;
+                ResultSet rs = null;
+
+                try {
+                    conn = DatabaseConnection.getConnection();
+                    String query = "SELECT user_id, name, email, diet_type, created_at FROM user WHERE user_id = ?";
+                    pstmt = conn.prepareStatement(query);
+                    pstmt.setInt(1, userId);
+                    rs = pstmt.executeQuery();
+
+                    if (rs.next()) {
+                        String response = String.format(
+                                "{\"userId\":%d,\"name\":\"%s\",\"email\":\"%s\",\"diet_type\":\"%s\",\"created_at\":\"%s\"}",
+                                rs.getInt("user_id"),
+                                escapeJson(rs.getString("name")),
+                                escapeJson(rs.getString("email")),
+                                escapeJson(rs.getString("diet_type") != null ? rs.getString("diet_type") : "none"),
+                                rs.getTimestamp("created_at").toString());
+                        sendJsonResponse(exchange, 200, response);
+                        System.out.println("✅ Served user profile for ID: " + userId);
+                    } else {
+                        sendJsonResponse(exchange, 404, "{\"error\":\"User not found\"}");
+                    }
+                } catch (SQLException e) {
+                    System.err.println("❌ Database error: " + e.getMessage());
+                    e.printStackTrace();
+                    sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
+                } finally {
+                    DatabaseConnection.closeResources(conn, pstmt, rs);
+                }
+                return;
+            }
+
+            else if ("PUT".equalsIgnoreCase(requestMethod)) {
+                String requestBody;
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(exchange.getRequestBody()))) {
+                    requestBody = reader.lines().collect(Collectors.joining("\n"));
+                }
+
+                Map<String, String> data = parseJson(requestBody);
+                String name = data.get("name");
+                String email = data.get("email");
+                String dietType = data.get("diet_type");
+
+                Connection conn = null;
+                PreparedStatement pstmt = null;
+
+                try {
+                    conn = DatabaseConnection.getConnection();
+                    String query = "UPDATE user SET name = ?, email = ?, diet_type = ? WHERE user_id = ?";
+                    pstmt = conn.prepareStatement(query);
+                    pstmt.setString(1, name);
+                    pstmt.setString(2, email);
+                    pstmt.setString(3, dietType);
+                    pstmt.setInt(4, userId);
+
+                    int rowsAffected = pstmt.executeUpdate();
+
+                    if (rowsAffected > 0) {
+                        String response = String.format(
+                                "{\"userId\":%d,\"name\":\"%s\",\"email\":\"%s\",\"diet_type\":\"%s\",\"message\":\"Profile updated successfully\"}",
+                                userId,
+                                escapeJson(name),
+                                escapeJson(email),
+                                escapeJson(dietType));
+                        sendJsonResponse(exchange, 200, response);
+                        System.out.println("✅ Updated profile for user ID: " + userId);
+                    } else {
+                        sendJsonResponse(exchange, 404, "{\"error\":\"User not found\"}");
+                    }
+                } catch (SQLException e) {
+                    System.err.println("❌ Update error: " + e.getMessage());
+                    e.printStackTrace();
+                    sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
+                } finally {
+                    DatabaseConnection.closeResources(conn, pstmt, null);
+                }
+                return;
+            }
+
+            else {
+                sendJsonResponse(exchange, 405, "{\"error\":\"Method not allowed\"}");
+            }
+        }
+    }
+
+    static class HealthGoalsHandler implements HttpHandler {
+        public void handle(HttpExchange exchange) throws IOException {
+            System.out.println("🎯🎯🎯 HealthGoalsHandler CALLED - Path: " + exchange.getRequestURI().getPath());
+
+            setCorsHeaders(exchange);
+
+            String requestMethod = exchange.getRequestMethod();
+            String path = exchange.getRequestURI().getPath();
+            String query = exchange.getRequestURI().getQuery();
+
+            System.out.println("🎯 HealthGoalsHandler - " + requestMethod + " to: " + path);
+
+            if ("OPTIONS".equalsIgnoreCase(requestMethod)) {
+                exchange.sendResponseHeaders(204, -1);
+                exchange.close();
+                return;
+            }
+
+            // GET /api/health-goals?userId={id} - Get user's health goals
+            if ("GET".equalsIgnoreCase(requestMethod)) {
+                if (query == null || !query.startsWith("userId=")) {
+                    sendJsonResponse(exchange, 400, "{\"error\":\"userId parameter required\"}");
+                    return;
+                }
+
+                String userIdStr = query.substring(7); // Remove "userId="
+                int userId;
+                try {
+                    userId = Integer.parseInt(userIdStr);
+                } catch (NumberFormatException e) {
+                    sendJsonResponse(exchange, 400, "{\"error\":\"Invalid userId\"}");
+                    return;
+                }
+
+                Connection conn = null;
+                PreparedStatement pstmt = null;
+                ResultSet rs = null;
+
+                try {
+                    conn = DatabaseConnection.getConnection();
+
+                    // Get the most recent health goal for this user
+                    String query1 = "SELECT goal_id, user_id, daily_calorie_target, protein_target, " +
+                            "carb_target, fat_target, goal_type, start_date " +
+                            "FROM user_health_goal " +
+                            "WHERE user_id = ? " +
+                            "ORDER BY start_date DESC, goal_id DESC " +
+                            "LIMIT 1";
+
+                    pstmt = conn.prepareStatement(query1);
+                    pstmt.setInt(1, userId);
+                    rs = pstmt.executeQuery();
+
+                    if (rs.next()) {
+                        String response = String.format(
+                                "{\"goalId\":%d,\"userId\":%d,\"calorieGoal\":%d,\"proteinGoal\":%d,\"carbsGoal\":%d,\"fatsGoal\":%d,\"goalType\":\"%s\",\"startDate\":\"%s\"}",
+                                rs.getInt("goal_id"),
+                                rs.getInt("user_id"),
+                                rs.getInt("daily_calorie_target"),
+                                Math.round(rs.getFloat("protein_target")), 
+                                Math.round(rs.getFloat("carb_target")), 
+                                Math.round(rs.getFloat("fat_target")), 
+                                escapeJson(rs.getString("goal_type") != null ? rs.getString("goal_type") : ""),
+                                rs.getDate("start_date") != null ? rs.getDate("start_date").toString() : "");
+                        System.out.println("🔍 DEBUG - Health Goals JSON: " + response); 
+                        sendJsonResponse(exchange, 200, response);
+                        System.out.println("✅ Served health goals for user: " + userId);
+                    } else {
+                        String response = String.format(
+                                "{\"userId\":%d,\"calorieGoal\":2000,\"proteinGoal\":150.0,\"carbsGoal\":200.0,\"fatsGoal\":65.0,\"goalType\":\"\",\"message\":\"No goals set\"}",
+                                userId);
+                        sendJsonResponse(exchange, 200, response);
+                        System.out.println("⚠️ No health goals found for user: " + userId);
+                    }
+                } catch (SQLException e) {
+                    System.err.println("❌ Database error: " + e.getMessage());
+                    e.printStackTrace();
+                    sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
+                } finally {
+                    DatabaseConnection.closeResources(conn, pstmt, rs);
+                }
+                return;
+            }
+
+            // POST /api/health-goals - Create or update health goals
+            else if ("POST".equalsIgnoreCase(requestMethod)) {
+                String requestBody;
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(exchange.getRequestBody()))) {
+                    requestBody = reader.lines().collect(Collectors.joining("\n"));
+                }
+
+                System.out.println("📦 Request body: " + requestBody);
+
+                Map<String, String> data = parseJson(requestBody);
+                System.out.println("🔍 Parsed data: " + data); 
+
+                String userIdStr = data.get("userId");
+                String calorieGoalStr = data.get("calorieGoal");
+                String proteinGoalStr = data.get("proteinGoal");
+                String carbsGoalStr = data.get("carbsGoal");
+                String fatsGoalStr = data.get("fatsGoal");
+                String goalType = data.get("goalType");
+
+                System.out.println("🔍 userId: " + userIdStr);
+                System.out.println("🔍 calorieGoal: " + calorieGoalStr); 
+
+                if (userIdStr == null || calorieGoalStr == null || proteinGoalStr == null ||
+                        carbsGoalStr == null || fatsGoalStr == null) {
+                    sendJsonResponse(exchange, 400, "{\"error\":\"Missing required fields\"}");
+                    return;
+                }
+
+                int userId;
+                int calorieGoal;
+                float proteinGoal;
+                float carbsGoal;
+                float fatsGoal;
+
+                try {
+                    userId = Integer.parseInt(userIdStr);
+                    calorieGoal = Integer.parseInt(calorieGoalStr);
+                    proteinGoal = Float.parseFloat(proteinGoalStr);
+                    carbsGoal = Float.parseFloat(carbsGoalStr);
+                    fatsGoal = Float.parseFloat(fatsGoalStr);
+                } catch (NumberFormatException e) {
+                    sendJsonResponse(exchange, 400, "{\"error\":\"Invalid number format\"}");
+                    return;
+                }
+
+                Connection conn = null;
+                PreparedStatement pstmt = null;
+                ResultSet rs = null;
+
+                try {
+                    conn = DatabaseConnection.getConnection();
+
+                    // Check if user already has goals
+                    String checkQuery = "SELECT goal_id FROM user_health_goal WHERE user_id = ? ORDER BY start_date DESC LIMIT 1";
+                    pstmt = conn.prepareStatement(checkQuery);
+                    pstmt.setInt(1, userId);
+                    rs = pstmt.executeQuery();
+
+                    if (rs.next()) {
+                        // Update existing goal
+                        int goalId = rs.getInt("goal_id");
+                        pstmt.close();
+
+                        String updateQuery = "UPDATE user_health_goal SET " +
+                                "daily_calorie_target = ?, " +
+                                "protein_target = ?, " +
+                                "carb_target = ?, " +
+                                "fat_target = ?, " +
+                                "goal_type = ? " +
+                                "WHERE goal_id = ?";
+
+                        pstmt = conn.prepareStatement(updateQuery);
+                        pstmt.setInt(1, calorieGoal);
+                        pstmt.setFloat(2, proteinGoal);
+                        pstmt.setFloat(3, carbsGoal);
+                        pstmt.setFloat(4, fatsGoal);
+                        pstmt.setString(5, goalType != null ? goalType : "");
+                        pstmt.setInt(6, goalId);
+
+                        int rowsAffected = pstmt.executeUpdate();
+
+                        if (rowsAffected > 0) {
+                            String response = String.format(
+                                    "{\"goalId\":%d,\"userId\":%d,\"calorieGoal\":%d,\"proteinGoal\":%d,\"carbsGoal\":%d,\"fatsGoal\":%d,\"message\":\"Goals updated successfully\"}",
+                                    goalId, userId, calorieGoal,
+                                    Math.round(proteinGoal),
+                                    Math.round(carbsGoal),
+                                    Math.round(fatsGoal));
+                            sendJsonResponse(exchange, 200, response);
+                            System.out.println("✅ Updated health goals for user: " + userId);
+                        } else {
+                            sendJsonResponse(exchange, 500, "{\"error\":\"Failed to update goals\"}");
+                        }
+                    } else {
+                        // Insert new goal
+                        pstmt.close();
+
+                        String insertQuery = "INSERT INTO user_health_goal " +
+                                "(user_id, daily_calorie_target, protein_target, carb_target, fat_target, goal_type, start_date) "
+                                +
+                                "VALUES (?, ?, ?, ?, ?, ?, CURDATE())";
+
+                        pstmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+                        pstmt.setInt(1, userId);
+                        pstmt.setInt(2, calorieGoal);
+                        pstmt.setFloat(3, proteinGoal);
+                        pstmt.setFloat(4, carbsGoal);
+                        pstmt.setFloat(5, fatsGoal);
+                        pstmt.setString(6, goalType != null ? goalType : "");
+
+                        int rowsAffected = pstmt.executeUpdate();
+
+                        if (rowsAffected > 0) {
+                            rs = pstmt.getGeneratedKeys();
+                            if (rs.next()) {
+                                int goalId = rs.getInt(1);
+                                String response = String.format(
+                                        "{\"goalId\":%d,\"userId\":%d,\"calorieGoal\":%d,\"proteinGoal\":%d,\"carbsGoal\":%d,\"fatsGoal\":%d,\"message\":\"Goals updated successfully\"}",
+                                        goalId, userId, calorieGoal,
+                                        Math.round(proteinGoal),
+                                        Math.round(carbsGoal),
+                                        Math.round(fatsGoal));
+                                sendJsonResponse(exchange, 200, response);
+                                System.out.println("✅ Created health goals for user: " + userId);
+                            } else {
+                                sendJsonResponse(exchange, 500, "{\"error\":\"Failed to get goal ID\"}");
+                            }
+                        } else {
+                            sendJsonResponse(exchange, 500, "{\"error\":\"Failed to create goals\"}");
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.err.println("❌ Database error: " + e.getMessage());
+                    e.printStackTrace();
+                    sendJsonResponse(exchange, 500,
+                            "{\"error\":\"Database error: " + escapeJson(e.getMessage()) + "\"}");
+                } finally {
+                    DatabaseConnection.closeResources(conn, pstmt, rs);
+                }
+                return;
+            }
+
+            else {
+                sendJsonResponse(exchange, 405, "{\"error\":\"Method not allowed\"}");
+            }
+        }
+    }
 
     private static void sendJsonResponse(HttpExchange exchange, int statusCode, String json) throws IOException {
         byte[] bytes = json.getBytes("UTF-8");
@@ -787,7 +1184,6 @@ public class WebServer {
             if (json.startsWith("{") && json.endsWith("}")) {
                 json = json.substring(1, json.length() - 1);
 
-                // Better parsing that handles quoted values with special characters
                 boolean inQuotes = false;
                 StringBuilder currentPair = new StringBuilder();
 
@@ -806,7 +1202,6 @@ public class WebServer {
                     }
                 }
 
-                // Process last pair
                 if (currentPair.length() > 0) {
                     processPair(currentPair.toString(), map);
                 }
