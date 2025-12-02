@@ -1,9 +1,9 @@
 -- HEAL MEAL SCHEMA DEFINITION
-DROP DATABASE IF EXISTS meal_planner_db;
-CREATE DATABASE meal_planner_db;
-USE meal_planner_db;
+DROP DATABASE IF EXISTS heal_meal_db;
+CREATE DATABASE heal_meal_db;
+USE heal_meal_db;
 
---USER (stores dietary preferences
+-- USER (stores dietary preferences
 CREATE TABLE user (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE user (
 ) ENGINE=InnoDB;
 
 -- USER HEALTH GOAL - tracks users fitness goals
-CREATE TABLE user_health_goal (
+CREATE TABLE userhealthgoal (
     goal_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     daily_calorie_target INT,
@@ -28,7 +28,7 @@ CREATE TABLE user_health_goal (
     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
---INGREDIENT - stores data of ingredients with nutrition info
+-- INGREDIENT - stores data of ingredients with nutrition info
 CREATE TABLE ingredient (
     ingredient_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE ingredient (
     INDEX idx_name (name)
 ) ENGINE=InnoDB;
 
---RECIPE - stores recipe  created by users
+-- RECIPE - stores recipe  created by users
 CREATE TABLE recipe (
     recipe_id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(200) NOT NULL,
@@ -58,8 +58,8 @@ CREATE TABLE recipe (
     INDEX idx_created_by (created_by)
 ) ENGINE=InnoDB;
 
---RECIPE INGREDIENT - m-m relationship between recipe and ingredients
-CREATE TABLE recipe_ingredient (
+-- RECIPE INGREDIENT - m-m relationship between recipe and ingredients
+CREATE TABLE recipeingredient (
     recipe_id INT NOT NULL,
     ingredient_id INT NOT NULL,
     quantity FLOAT NOT NULL,
@@ -69,8 +69,8 @@ CREATE TABLE recipe_ingredient (
     FOREIGN KEY (ingredient_id) REFERENCES ingredient(ingredient_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
---RECIPE TAG - used for filtering ingredients
-CREATE TABLE recipe_tag (
+-- RECIPE TAG - used for filtering ingredients
+CREATE TABLE recipetag (
     recipe_id INT NOT NULL,
     tag_name VARCHAR(50) NOT NULL,
     PRIMARY KEY (recipe_id, tag_name),
@@ -78,7 +78,7 @@ CREATE TABLE recipe_tag (
     INDEX idx_tag (tag_name)
 ) ENGINE=InnoDB;
 
---RATING -includes comments from the users
+-- RATING -includes comments from the users
 CREATE TABLE rating (
     rating_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -91,8 +91,8 @@ CREATE TABLE rating (
     UNIQUE KEY unique_user_recipe (user_id, recipe_id)
 ) ENGINE=InnoDB;
 
---MEAL PLAN - user's meal planning schedule
-CREATE TABLE meal_plan (
+-- MEAL PLAN - user's meal planning schedule
+CREATE TABLE mealplan (
     mealplan_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     start_date DATE NOT NULL,
@@ -103,35 +103,35 @@ CREATE TABLE meal_plan (
     INDEX idx_user_dates (user_id, start_date, end_date)
 ) ENGINE=InnoDB;
 
---MEAL ENTRY - individual meal entry within a meal plan
-CREATE TABLE meal_entry (
+-- MEAL ENTRY - individual meal entry within a meal plan
+CREATE TABLE mealentry (
     mealentry_id INT PRIMARY KEY AUTO_INCREMENT,
     mealplan_id INT NOT NULL,
     recipe_id INT NOT NULL,
     date DATE NOT NULL,
     meal_type VARCHAR(20) NOT NULL,
-    FOREIGN KEY (mealplan_id) REFERENCES meal_plan(mealplan_id) ON DELETE CASCADE,
+    FOREIGN KEY (mealplan_id) REFERENCES mealplan(mealplan_id) ON DELETE CASCADE,
     FOREIGN KEY (recipe_id) REFERENCES recipe(recipe_id) ON DELETE CASCADE,
     INDEX idx_mealplan_date (mealplan_id, date)
 ) ENGINE=InnoDB;
 
---SHOPPING LIST - generated from meal plans
-CREATE TABLE shopping_list (
+-- SHOPPING LIST - generated from meal plans
+CREATE TABLE shoppinglist (
     list_id INT PRIMARY KEY AUTO_INCREMENT,
     mealplan_id INT NOT NULL,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (mealplan_id) REFERENCES meal_plan(mealplan_id) ON DELETE CASCADE
+    FOREIGN KEY (mealplan_id) REFERENCES mealplan(mealplan_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
---SHOPPING LIST ITEMS - separate items from the list
-CREATE TABLE shoppingList_item (
+-- SHOPPING LIST ITEMS - separate items from the list
+CREATE TABLE shoppinglistitem (
     item_id INT PRIMARY KEY AUTO_INCREMENT,
     list_id INT NOT NULL,
     ingredient_id INT NOT NULL,
     total_quantity FLOAT NOT NULL,
     unit VARCHAR(20) NOT NULL,
     is_purchased BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (list_id) REFERENCES shopping_list(list_id) ON DELETE CASCADE,
+    FOREIGN KEY (list_id) REFERENCES shoppinglist(list_id) ON DELETE CASCADE,
     FOREIGN KEY (ingredient_id) REFERENCES ingredient(ingredient_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 

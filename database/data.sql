@@ -1,8 +1,8 @@
---Sample data for heal meal database
+-- Sample data for heal meal database
 
 USE heal_meal_db;
 
---User names (50)
+-- User names (50)
 
 INSERT INTO user (name, email, password, diet_type, preferences) VALUES
 ('Alisher Karimov', 'alisher.karimov@email.com', 'pass123', 'balanced', 'Loves spicy food'),
@@ -56,16 +56,16 @@ INSERT INTO user (name, email, password, diet_type, preferences) VALUES
 ('Bahrom Qodirov', 'bahrom.qodirov@email.com', 'pass123', 'mediterranean', 'Heart attack survivor'),
 ('Mariya Fedorova', 'mariya.fedorova@email.com', 'pass123', 'balanced', 'Cooking show host');
 
---user health goals
+-- user health goals
 
-INSERT INTO user_health_goal (user_id, daily_calorie_target, protein_target, carb_target, fat_target, goal_type, start_date) VALUES
+INSERT INTO userhealthgoal (user_id, daily_calorie_target, protein_target, carb_target, fat_target, goal_type, start_date) VALUES
 (1, 2200, 150, 200, 80, 'maintenance', '2025-01-01'),
 (4, 1500, 120, 30, 100, 'weight_loss', '2025-01-01'),
 (11, 2800, 200, 50, 150, 'muscle_gain', '2025-01-15'),
 (15, 2500, 180, 150, 90, 'athletic_performance', '2025-02-01'),
 (20, 1600, 100, 40, 110, 'weight_loss', '2025-01-10');
 
---Ingredients
+-- Ingredients
 
 INSERT INTO ingredient (name, unit, calories_per_unit, protein, fat, carbs) VALUES
 -- Proteins
@@ -369,7 +369,7 @@ INSERT INTO ingredient (name, unit, calories_per_unit, protein, fat, carbs) VALU
 ('Panko Breadcrumbs', 'cup', 110, 3.7, 0.8, 20.4),
 ('Regular Breadcrumbs', 'cup', 427, 13.4, 5.8, 78.3);
 
---Healthy recipes
+-- Healthy recipes
 
 INSERT INTO recipe (title, description, prep_time, cook_time, servings, difficulty, category, created_by) VALUES
 -- Breakfast Recipes
@@ -490,10 +490,10 @@ INSERT INTO recipe (title, description, prep_time, cook_time, servings, difficul
 ('Keto Beef Tacos', 'Low-carb tacos with lettuce wraps', 15, 15, 4, 'Easy', 'Keto', 37);
 
 
---Recipe ingredients
+-- Recipe ingredients
 
 -- Recipe 1: High-Protein Overnight Oats
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (1, 38, 50, 'gram'),
 (1, 6, 100, 'gram'),
 (1, 52, 120, 'cup'),
@@ -501,7 +501,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (1, 50, 10, 'gram');
 
 -- Recipe 2: Veggie-Packed Omelet
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (2, 5, 3, 'piece'),
 (2, 17, 30, 'gram'),
 (2, 21, 50, 'gram'),
@@ -509,7 +509,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (2, 60, 5, 'gram');
 
 -- Recipe 3: Quinoa Breakfast Bowl
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (3, 37, 100, 'gram'),
 (3, 27, 1, 'piece'),
 (3, 29, 50, 'gram'),
@@ -517,14 +517,14 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (3, 65, 5, 'tablespoon');
 
 -- Recipe 4: Avocado Toast with Eggs
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (4, 39, 2, 'slice'),
 (4, 31, 0.5, 'piece'),
 (4, 5, 2, 'piece'),
 (4, 73, 1, 'teaspoon');
 
 -- Recipe 5: Berry Protein Smoothie
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (5, 6, 150, 'gram'),
 (5, 29, 100, 'gram'),
 (5, 30, 50, 'gram'),
@@ -532,7 +532,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (5, 27, 0.5, 'piece');
 
 -- Recipe 6: Sweet Potato Hash
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (6, 24, 200, 'gram'),
 (6, 20, 100, 'gram'),
 (6, 64, 50, 'gram'),
@@ -540,14 +540,14 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (6, 60, 10, 'gram');
 
 -- Recipe 7: Chia Seed Pudding
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (7, 48, 30, 'gram'),
 (7, 53, 240, 'cup'),
 (7, 29, 50, 'gram'),
 (7, 65, 10, 'tablespoon');
 
 -- Recipe 8: Greek Yogurt Parfait
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (8, 6, 200, 'gram'),
 (8, 38, 30, 'gram'),
 (8, 30, 50, 'gram'),
@@ -555,7 +555,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (8, 65, 10, 'tablespoon');
 
 -- Recipe 9: Whole Wheat Pancakes
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (9, 39, 4, 'slice'),
 (9, 5, 2, 'piece'),
 (9, 52, 120, 'cup'),
@@ -563,14 +563,14 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (9, 28, 1, 'piece');
 
 -- Recipe 10: Spinach Feta Scramble
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (10, 5, 3, 'piece'),
 (10, 17, 50, 'gram'),
 (10, 56, 30, 'gram'),
 (10, 21, 50, 'gram');
 
 -- Recipe 11: Grilled Chicken Salad
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (11, 1, 150, 'gram'),
 (11, 24, 50, 'gram'),
 (11, 17, 40, 'gram'),
@@ -580,7 +580,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (11, 60, 15, 'gram');
 
 -- Recipe 12: Mediterranean Quinoa Bowl
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (12, 37, 100, 'gram'),
 (12, 14, 100, 'gram'),
 (12, 23, 50, 'gram'),
@@ -589,7 +589,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (12, 56, 30, 'gram');
 
 -- Recipe 13: Turkey and Avocado Wrap
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (13, 8, 100, 'gram'),
 (13, 31, 0.5, 'piece'),
 (13, 24, 30, 'gram'),
@@ -597,7 +597,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (13, 39, 1, 'slice');
 
 -- Recipe 14: Lentil Soup
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (14, 15, 200, 'gram'),
 (14, 19, 100, 'gram'),
 (14, 64, 50, 'gram'),
@@ -605,7 +605,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (14, 62, 50, 'gram');
 
 -- Recipe 15: Tuna Poke Bowl
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (15, 9, 150, 'gram'),
 (15, 36, 100, 'gram'),
 (15, 31, 0.5, 'piece'),
@@ -613,14 +613,14 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (15, 63, 10, 'tablespoon');
 
 -- Recipe 16: Chicken Caesar Salad
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (16, 1, 150, 'gram'),
 (16, 24, 100, 'gram'),
 (16, 54, 20, 'gram'),
 (16, 60, 10, 'gram');
 
 -- Recipe 17: Black Bean Burrito Bowl
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (17, 13, 150, 'gram'),
 (17, 36, 100, 'gram'),
 (17, 20, 50, 'gram'),
@@ -628,14 +628,14 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (17, 31, 0.5, 'piece');
 
 -- Recipe 18: Caprese Sandwich
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (18, 55, 50, 'gram'),
 (18, 21, 100, 'gram'),
 (18, 39, 2, 'slice'),
 (18, 60, 15, 'gram');
 
 -- Recipe 19: Asian Chicken Lettuce Wraps
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (19, 1, 200, 'gram'),
 (19, 24, 8, 'gram'),
 (19, 19, 50, 'gram'),
@@ -643,7 +643,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (19, 63, 20, 'tablespoon');
 
 -- Recipe 20: Greek Chicken Pita
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (20, 1, 150, 'gram'),
 (20, 39, 1, 'slice'),
 (20, 6, 50, 'gram'),
@@ -651,14 +651,14 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (20, 21, 50, 'gram');
 
 -- Recipe 21: Baked Salmon with Asparagus
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (21, 3, 200, 'gram'),
 (21, 26, 150, 'gram'),
 (21, 60, 15, 'gram'),
 (21, 70, 10, 'tablespoon');
 
 -- Recipe 22: Grilled Chicken and Vegetables
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (22, 1, 400, 'gram'),
 (22, 16, 200, 'gram'),
 (22, 20, 150, 'gram'),
@@ -666,7 +666,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (22, 60, 20, 'gram');
 
 -- Recipe 23: Beef Stir-Fry
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (23, 2, 300, 'gram'),
 (23, 16, 200, 'gram'),
 (23, 20, 100, 'gram'),
@@ -674,7 +674,7 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (23, 62, 15, 'gram');
 
 -- Recipe 24: Vegetarian Chili
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (24, 13, 200, 'gram'),
 (24, 14, 100, 'gram'),
 (24, 21, 200, 'gram'),
@@ -682,14 +682,14 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (24, 62, 50, 'gram');
 
 -- Recipe 25: Lemon Herb Chicken
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (25, 1, 400, 'gram'),
 (25, 70, 30, 'tablespoon'),
 (25, 61, 4, 'clove'),
 (25, 60, 15, 'gram');
 
 -- Recipe 26: Shrimp Pasta Primavera
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (26, 7, 300, 'gram'),
 (26, 40, 200, 'gram'),
 (26, 16, 100, 'gram'),
@@ -697,35 +697,35 @@ INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (26, 60, 20, 'gram');
 
 -- Recipe 27: Turkey Meatballs
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (27, 8, 500, 'gram'),
 (27, 5, 1, 'piece'),
 (27, 62, 50, 'gram'),
 (27, 61, 3, 'clove');
 
 -- Recipe 28: Tofu Curry
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (28, 4, 400, 'gram'),
 (28, 16, 150, 'gram'),
 (28, 20, 100, 'gram'),
 (28, 62, 15, 'gram');
 
 -- Recipe 29: Grilled Steak with Sweet Potato
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (29, 2, 200, 'gram'),
 (29, 24, 200, 'gram'),
 (29, 60, 10, 'gram');
 
 -- Recipe 30: Baked Cod with Green Beans
-INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity, unit) VALUES
+INSERT INTO recipeingredient (recipe_id, ingredient_id, quantity, unit) VALUES
 (30, 12, 200, 'gram'),
 (30, 27, 150, 'gram'),
 (30, 70, 15, 'tablespoon'),
 (30, 61, 2, 'clove');
 
---Recipe tags
+-- Recipe tags
 
-INSERT INTO recipe_tag (recipe_id, tag_name) VALUES
+INSERT INTO recipetag (recipe_id, tag_name) VALUES
 -- Breakfast tags
 (1, 'high-protein'), (1, 'meal-prep'), (1, 'vegetarian'),
 (2, 'high-protein'), (2, 'low-carb'), (2, 'vegetarian'),
@@ -788,9 +788,9 @@ INSERT INTO rating (user_id, recipe_id, rating, comment) VALUES
 (20, 27, 4, 'Turkey meatballs are healthy and tasty.');
 
 
---Meal Plans
+-- Meal Plans
 
-INSERT INTO meal_plan (user_id, start_date, end_date, title) VALUES
+INSERT INTO mealplan (user_id, start_date, end_date, title) VALUES
 (1, '2025-11-10', '2025-11-16', 'Week 1 - Balanced Diet'),
 (1, '2025-11-17', '2025-11-23', 'Week 2 - Lean & Green'),
 (4, '2025-11-10', '2025-11-16', 'Keto Week 1'),
@@ -802,10 +802,10 @@ INSERT INTO meal_plan (user_id, start_date, end_date, title) VALUES
 (5, '2025-11-10', '2025-11-16', 'Paleo Week 1'),
 (6, '2025-11-10', '2025-11-16', 'Gluten-Free Week');
 
---Meal Entries
+-- Meal Entries
 
 -- User 1 - Week 1 Meal Plan
-INSERT INTO meal_entry (mealplan_id, recipe_id, date, meal_type) VALUES
+INSERT INTO mealentry (mealplan_id, recipe_id, date, meal_type) VALUES
 -- Monday
 (1, 1, '2025-11-10', 'Breakfast'),
 (1, 11, '2025-11-10', 'Lunch'),
@@ -841,7 +841,7 @@ INSERT INTO meal_entry (mealplan_id, recipe_id, date, meal_type) VALUES
 (1, 27, '2025-11-16', 'Dinner');
 
 -- User 4 - Keto Meal Plan (Week 1)
-INSERT INTO meal_entry (mealplan_id, recipe_id, date, meal_type) VALUES
+INSERT INTO mealentry (mealplan_id, recipe_id, date, meal_type) VALUES
 -- Monday
 (3, 2, '2025-11-10', 'Breakfast'),
 (3, 11, '2025-11-10', 'Lunch'),
@@ -872,12 +872,12 @@ INSERT INTO meal_entry (mealplan_id, recipe_id, date, meal_type) VALUES
 (3, 30, '2025-11-16', 'Dinner');
 
 --Shopping list
-INSERT INTO shopping_list (mealplan_id) VALUES
+INSERT INTO shoppinglist (mealplan_id) VALUES
 (1), (2), (3), (4), (5);
 
 --Shopping list items
 
-INSERT INTO shoppinglist_item (list_id, ingredient_id, total_quantity, unit, is_purchased) VALUES
+INSERT INTO shoppinglistitem (list_id, ingredient_id, total_quantity, unit, is_purchased) VALUES
 (1, 1, 600, 'gram', FALSE),
 (1, 3, 200, 'gram', FALSE),
 (1, 5, 10, 'piece', FALSE),
