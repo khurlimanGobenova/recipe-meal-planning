@@ -76,7 +76,75 @@ export const mealPlanAPI = {
       body: JSON.stringify(mealPlanData),
     });
   },
-};
+}; 
+app.get('/api / mealentries', async (req, res) => {
+const { mealPlanId } = req.query;
+if (!mealPlanId) return res.status(400).json({ error: 'mealPlanId required' });
+
+try {
+  const [rows] = await pool.query(
+    `SELECT me.mealentry_id AS id,
+              me.date AS planDate,
+              me.meal_type AS mealType,
+              r.recipe_id,
+              r.title AS recipeTitle
+       FROM mealentry me
+       JOIN recipe r ON me.recipe_id = r.recipe_id
+       WHERE me.mealplan_id = ?`,
+    [mealPlanId]
+  );
+  res.json(rows);
+} catch (err) {
+  console.error(err);
+  res.status(500).json({ error: 'Failed to fetch meal entries' });
+}
+});
+
+// Add a new meal entry
+app.post('/api/mealentries', async (req, res) => {
+  const { mealPlanId, planDate, mealType, recipeId } = req.body;
+  if (!mealPlanId || !planDate || !mealType || !recipeId) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const [result] = await pool.query(
+      `INSERT INTO mealentry (mealplan_id, recipe_id, date, meal_type)
+       VALUES (?, ?, ?, ?)`,
+      [mealPlanId, recipeId, planDate, mealType]
+    );
+
+    const [rows] = await pool.query(
+      `SELECT me.mealentry_id AS id,
+              me.date AS planDate,
+              me.meal_type AS mealType,
+              r.recipe_id,
+              r.title AS recipeTitle
+       FROM mealentry me
+       JOIN recipe r ON me.recipe_id = r.recipe_id
+       WHERE me.mealentry_id = ?`,
+      [result.insertId]
+    );
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to add meal entry' });
+  }
+});
+
+// Delete a meal entry
+app.delete('/api/mealentries/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM mealentry WHERE mealentry_id = ?', [id]);
+    res.json({ message: 'Meal entry deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete meal entry' });
+  }
+});
+
 
 /**
  * Ingredient API calls
