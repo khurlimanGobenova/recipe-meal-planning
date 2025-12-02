@@ -1,68 +1,56 @@
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Recipes from './pages/Recipes';
 import Profile from './pages/Profile';
 import MealPlan from './pages/MealPlan';
 import ShoppingList from './pages/ShoppingList';
+import StartPage from './pages/StartPage';
 import './styles/global.css';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* Public Route - Login/Signup */}
+        <Route path="/" element={<StartPage />} />
         
-        {/* Protected Routes */}
+        {/* Protected Routes - No ProtectedRoute wrapper, just direct routes */}
         <Route path="/home" element={
-          <ProtectedRoute>
-            <>
-              <Navbar />
-              <Home />
-            </>
-          </ProtectedRoute>
+          <>
+            <Navbar />
+            <Home />
+          </>
         } />
         
         <Route path="/recipes" element={
-          <ProtectedRoute>
-            <>
-              <Navbar />
-              <Recipes />
-            </>
-          </ProtectedRoute>
+          <>
+            <Navbar />
+            <Recipes />
+          </>
         } />
         
         <Route path="/meal-plan" element={
-          <ProtectedRoute>
-            <>
-              <Navbar />
-              <MealPlan />
-            </>
-          </ProtectedRoute>
+          <>
+            <Navbar />
+            <MealPlan />
+          </>
         } />
         
         <Route path="/shopping-list" element={
-          <ProtectedRoute>
-            <>
-              <Navbar />
-              <ShoppingList />
-            </>
-          </ProtectedRoute>
+          <>
+            <Navbar />
+            <ShoppingList />
+          </>
         } />
         
         <Route path="/profile" element={
-          <ProtectedRoute>
-            <>
-              <Navbar />
-              <Profile />
-            </>
-          </ProtectedRoute>
+          <>
+            <Navbar />
+            <Profile />
+          </>
         } />
       </Routes>
     </BrowserRouter>
