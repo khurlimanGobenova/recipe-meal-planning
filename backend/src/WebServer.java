@@ -18,7 +18,7 @@ public class WebServer {
 
     private static final int PORT = 8080;
 
-    private static final String CORS_ORIGIN = "http://localhost:3000"; // Change this to match your frontend port
+    private static final String CORS_ORIGIN = "*";
 
     private static void setCorsHeaders(HttpExchange exchange) {
         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", CORS_ORIGIN);
