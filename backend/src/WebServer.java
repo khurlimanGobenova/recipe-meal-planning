@@ -30,20 +30,6 @@ public class WebServer {
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
 
-        // server.createContext("/api/users/change-password", new UserHandler());
-        // server.createContext("/api/users/login", new UserHandler());
-        // server.createContext("/api/users/signup", new UserHandler());
-        // server.createContext("/api/users/", new UserDetailHandler());
-        // server.createContext("/api/users", new UserHandler());
-        // server.createContext("/api/recipes", new RecipesHandler());
-        // server.createContext("/api/recipe/", new RecipeDetailHandler());
-        // server.createContext("/api/search", new SearchHandler());
-        // server.createContext("/api/mealplans", new MealPlansHandler());
-        // server.createContext("/api/ingredients", new IngredientsHandler());
-        // server.createContext("/api/stats", new StatsHandler());
-        // server.createContext("/api/health-goals", new HealthGoalsHandler());
-        // server.createContext("/", new StaticFileHandler());
-
         // USER AUTH
         server.createContext("/api/users/login", new UserHandler());
         server.createContext("/api/users/signup", new UserHandler());
