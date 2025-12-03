@@ -138,7 +138,7 @@ const StartPage = () => {
   return (
     <div className="startpage-container">
       <div className="intro-section">
-        <h1>🥗 Health Meal Planner</h1>
+        <h1>HEAL MEAL</h1>
         <p>Plan meals, track nutrition, and reach your goals effortlessly.</p>
       </div>
 
