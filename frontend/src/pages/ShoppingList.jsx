@@ -3,22 +3,45 @@ import '../styles/ShoppingList.css';
 
 function ShoppingList() {
   const [ingredients, setIngredients] = useState([]);
+  const [mealPlans, setMealPlans] = useState([]);
+  const [selectedPlanId, setSelectedPlanId] = useState(null);
   const [checkedItems, setCheckedItems] = useState(new Set());
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+
+  // Fetch user's meal plans
   useEffect(() => {
-    fetch('http://localhost:8080/api/ingredients')
-      .then(res => res.json())
-      .then(data => {
-        setIngredients(data.slice(0, 20)); // Show first 20
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        setLoading(false);
-      });
-  }, []);
+    if (currentUser.userId) {
+      fetch(`http://localhost:8080/api/mealplans?userId=${currentUser.userId}`)
+        .then(res => res.json())
+        .then(data => {
+          setMealPlans(data);
+          if (data.length > 0) {
+            setSelectedPlanId(data[0].id);
+          }
+        })
+        .catch(err => console.error('Error fetching meal plans:', err));
+    }
+  }, [currentUser.userId]);
+
+  // Generate shopping list when meal plan is selected
+  useEffect(() => {
+    if (selectedPlanId) {
+      setLoading(true);
+      fetch(`http://localhost:8080/api/shopping-list?mealPlanId=${selectedPlanId}`)
+        .then(res => res.json())
+        .then(data => {
+          setIngredients(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error('Error generating shopping list:', err);
+          setLoading(false);
+        });
+    }
+  }, [selectedPlanId]);
 
   const toggleItem = (id) => {
     const newChecked = new Set(checkedItems);
@@ -37,16 +60,42 @@ function ShoppingList() {
   const checkedCount = checkedItems.size;
   const totalCount = filteredIngredients.length;
 
+  const selectedPlan = mealPlans.find(p => p.id === selectedPlanId);
+
   return (
     <div className="page">
       <div className="container">
         <div className="page-header">
           <div>
             <h1>Shopping List</h1>
-            <p>Your ingredients to buy</p>
+            <p>Ingredients from your meal plan</p>
           </div>
-          <button className="btn btn-primary">Generate from Meal Plan</button>
         </div>
+
+        {/* Meal Plan Selector */}
+        {mealPlans.length > 0 && (
+          <div className="meal-plan-selector">
+            <label>Select Meal Plan: </label>
+            <select 
+              value={selectedPlanId || ''}
+              onChange={(e) => setSelectedPlanId(parseInt(e.target.value))}
+              className="plan-select"
+            >
+              {mealPlans.map(plan => (
+                <option key={plan.id} value={plan.id}>
+                  {plan.title} ({new Date(plan.startDate).toLocaleDateString()})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {selectedPlan && (
+          <div className="plan-info">
+            <h3>Shopping list for: {selectedPlan.title}</h3>
+            <p>{new Date(selectedPlan.startDate).toLocaleDateString()} - {new Date(selectedPlan.endDate).toLocaleDateString()}</p>
+          </div>
+        )}
 
         {/* Progress */}
         <div className="shopping-progress">
@@ -65,23 +114,31 @@ function ShoppingList() {
         </div>
 
         {/* Search */}
-        <div className="search-section">
-          <input
-            type="text"
-            placeholder="Search ingredients..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-        </div>
+        {ingredients.length > 0 && (
+          <div className="search-section">
+            <input
+              type="text"
+              placeholder="Search ingredients..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
+        )}
 
         {/* Shopping List */}
         {loading ? (
-          <div className="loading">Loading ingredients...</div>
+          <div className="loading">Generating shopping list...</div>
+        ) : ingredients.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">🛒</div>
+            <h3>No ingredients yet</h3>
+            <p>Add recipes to your meal plan to generate a shopping list</p>
+          </div>
         ) : (
           <div className="shopping-list-card">
             <div className="list-header">
-              <h3>Ingredients</h3>
+              <h3>Ingredients ({totalCount})</h3>
               <button 
                 className="btn btn-secondary btn-sm"
                 onClick={() => setCheckedItems(new Set())}
@@ -106,34 +163,24 @@ function ShoppingList() {
                   </div>
                   <div className="item-details">
                     <span className="item-name">{item.name}</span>
-                    <span className="item-unit">{item.unit}</span>
-                  </div>
-                  <div className="item-nutrition">
-                    {item.calories} cal
+                    <span className="item-quantity">{item.quantity} {item.unit}</span>
                   </div>
                 </div>
               ))}
             </div>
 
-            {filteredIngredients.length === 0 && (
+            {filteredIngredients.length === 0 && searchTerm && (
               <div className="empty-state">
-                <p>No ingredients found</p>
+                <p>No ingredients found matching "{searchTerm}"</p>
               </div>
             )}
           </div>
         )}
 
-        {/* Quick Add */}
-        <div className="quick-add-card">
-          <h3>Quick Add Item</h3>
-          <div className="quick-add-form">
-            <input
-              type="text"
-              placeholder="Enter item name..."
-              className="quick-add-input"
-            />
-            <button className="btn btn-primary">Add</button>
-          </div>
+        {/* Info Card */}
+        <div className="info-card">
+          <h3>💡 Tip</h3>
+          <p>The shopping list automatically aggregates all ingredients from your selected meal plan. Check off items as you shop!</p>
         </div>
       </div>
     </div>

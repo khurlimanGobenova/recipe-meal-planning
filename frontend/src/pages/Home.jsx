@@ -5,7 +5,10 @@ import '../styles/Home.css';
 function Home() {
   const [stats, setStats] = useState(null);
   const [recentRecipes, setRecentRecipes] = useState([]);
+  const [nutritionProgress, setNutritionProgress] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
 
   useEffect(() => {
     // Fetch stats
@@ -25,14 +28,29 @@ function Home() {
         console.error('Error fetching recipes:', err);
         setLoading(false);
       });
-  }, []);
+
+    // Fetch nutrition progress if user is logged in
+    if (currentUser.userId) {
+      fetch(`http://localhost:8080/api/nutrition-progress?userId=${currentUser.userId}`)
+        .then(res => res.json())
+        .then(data => setNutritionProgress(data))
+        .catch(err => console.error('Error fetching nutrition progress:', err));
+    }
+  }, [currentUser.userId]);
+
+  const getNutritionColor = (percent) => {
+    if (percent < 50) return '#ff6b6b';
+    if (percent < 80) return '#ffd93d';
+    if (percent <= 110) return '#6bcf7f';
+    return '#ff9f43';
+  };
 
   return (
     <div className="page">
       <div className="container">
         {/* Hero Section */}
         <section className="hero">
-          <h1>Welcome to Heal Meal</h1>
+          <h1>Welcome to Heal Meal{currentUser.name ? `, ${currentUser.name}` : ''}</h1>
           <p>Plan your meals, track nutrition, and eat healthy</p>
           <div className="hero-actions">
             <Link to="/recipes" className="btn btn-primary">
@@ -43,6 +61,102 @@ function Home() {
             </Link>
           </div>
         </section>
+
+        {/* Nutrition Progress */}
+        {nutritionProgress && currentUser.userId && (
+          <section className="nutrition-section">
+            <h2>Today's Nutrition Progress</h2>
+            <div className="nutrition-grid">
+              <div className="nutrition-card">
+                <div className="nutrition-header">
+                  <span className="nutrition-icon">🔥</span>
+                  <span className="nutrition-label">Calories</span>
+                </div>
+                <div className="nutrition-progress-bar">
+                  <div 
+                    className="nutrition-fill"
+                    style={{
+                      width: `${Math.min(nutritionProgress.calories.percent, 100)}%`,
+                      backgroundColor: getNutritionColor(nutritionProgress.calories.percent)
+                    }}
+                  ></div>
+                </div>
+                <div className="nutrition-values">
+                  <span className="current">{nutritionProgress.calories.current}</span>
+                  <span className="separator">/</span>
+                  <span className="goal">{nutritionProgress.calories.goal}</span>
+                </div>
+                <div className="nutrition-percent">{nutritionProgress.calories.percent}%</div>
+              </div>
+
+              <div className="nutrition-card">
+                <div className="nutrition-header">
+                  <span className="nutrition-icon">💪</span>
+                  <span className="nutrition-label">Protein</span>
+                </div>
+                <div className="nutrition-progress-bar">
+                  <div 
+                    className="nutrition-fill"
+                    style={{
+                      width: `${Math.min(nutritionProgress.protein.percent, 100)}%`,
+                      backgroundColor: getNutritionColor(nutritionProgress.protein.percent)
+                    }}
+                  ></div>
+                </div>
+                <div className="nutrition-values">
+                  <span className="current">{nutritionProgress.protein.current}g</span>
+                  <span className="separator">/</span>
+                  <span className="goal">{nutritionProgress.protein.goal}g</span>
+                </div>
+                <div className="nutrition-percent">{nutritionProgress.protein.percent}%</div>
+              </div>
+
+              <div className="nutrition-card">
+                <div className="nutrition-header">
+                  <span className="nutrition-icon">🌾</span>
+                  <span className="nutrition-label">Carbs</span>
+                </div>
+                <div className="nutrition-progress-bar">
+                  <div 
+                    className="nutrition-fill"
+                    style={{
+                      width: `${Math.min(nutritionProgress.carbs.percent, 100)}%`,
+                      backgroundColor: getNutritionColor(nutritionProgress.carbs.percent)
+                    }}
+                  ></div>
+                </div>
+                <div className="nutrition-values">
+                  <span className="current">{nutritionProgress.carbs.current}g</span>
+                  <span className="separator">/</span>
+                  <span className="goal">{nutritionProgress.carbs.goal}g</span>
+                </div>
+                <div className="nutrition-percent">{nutritionProgress.carbs.percent}%</div>
+              </div>
+
+              <div className="nutrition-card">
+                <div className="nutrition-header">
+                  <span className="nutrition-icon">🥑</span>
+                  <span className="nutrition-label">Fat</span>
+                </div>
+                <div className="nutrition-progress-bar">
+                  <div 
+                    className="nutrition-fill"
+                    style={{
+                      width: `${Math.min(nutritionProgress.fat.percent, 100)}%`,
+                      backgroundColor: getNutritionColor(nutritionProgress.fat.percent)
+                    }}
+                  ></div>
+                </div>
+                <div className="nutrition-values">
+                  <span className="current">{nutritionProgress.fat.current}g</span>
+                  <span className="separator">/</span>
+                  <span className="goal">{nutritionProgress.fat.goal}g</span>
+                </div>
+                <div className="nutrition-percent">{nutritionProgress.fat.percent}%</div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Stats Cards */}
         {stats && (

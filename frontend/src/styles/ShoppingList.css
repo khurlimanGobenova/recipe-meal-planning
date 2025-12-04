@@ -187,3 +187,76 @@
     width: 100%;
   }
 }
+/* Shopping List Enhancements */
+.meal-plan-selector {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.meal-plan-selector label {
+  font-weight: 600;
+  margin-right: 1rem;
+  color: #2c3e50;
+}
+
+.plan-select {
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  min-width: 300px;
+  transition: border-color 0.2s;
+}
+
+.plan-select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.plan-info {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.plan-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.plan-info p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.item-quantity {
+  font-weight: 600;
+  color: #4CAF50;
+  margin-left: 0.5rem;
+}
+
+.info-card {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-top: 2rem;
+}
+
+.info-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.info-card p {
+  margin: 0;
+  opacity: 0.95;
+  line-height: 1.5;
+}

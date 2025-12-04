@@ -217,3 +217,111 @@
     justify-content: center;
   }
 }
+/* Nutrition Progress Section */
+.nutrition-section {
+  margin: 2rem 0;
+}
+
+.nutrition-section h2 {
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+}
+
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.nutrition-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.nutrition-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.nutrition-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.nutrition-icon {
+  font-size: 1.5rem;
+}
+
+.nutrition-label {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.nutrition-progress-bar {
+  height: 12px;
+  background: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.nutrition-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 6px;
+}
+
+.nutrition-values {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.nutrition-values .current {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.nutrition-values .separator {
+  color: #999;
+  font-size: 1rem;
+}
+
+.nutrition-values .goal {
+  color: #666;
+  font-size: 1rem;
+}
+
+.nutrition-percent {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.info-card {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-top: 2rem;
+}
+
+.info-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.info-card p {
+  margin: 0;
+  opacity: 0.95;
+  line-height: 1.5;
+}
