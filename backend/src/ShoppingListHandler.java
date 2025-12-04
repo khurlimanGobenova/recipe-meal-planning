@@ -73,10 +73,12 @@ public class ShoppingListHandler implements HttpHandler {
         } catch (NumberFormatException e) {
             WebServer.sendJsonResponse(exchange, 400, "{\"error\":\"Invalid meal plan ID\"}");
         } catch (SQLException e) {
-            System.err.println("Database error: " + e.getMessage());
-            WebServer.sendJsonResponse(exchange, 500, "{\"error\":\"Database error\"}");
+            System.err.println("Database error in shopping list: " + e.getMessage());
+            e.printStackTrace();
+            WebServer.sendJsonResponse(exchange, 500, "{\"error\":\"Database error: " + WebServer.escapeJson(e.getMessage()) + "\"}");
         } finally {
             DatabaseConnection.closeResources(conn, pstmt, rs);
         }
     }
 }
+
