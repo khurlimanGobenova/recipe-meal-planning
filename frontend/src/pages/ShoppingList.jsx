@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import '../styles/ShoppingList.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "../styles/ShoppingList.css";
 
 function ShoppingList() {
   const [ingredients, setIngredients] = useState([]);
@@ -7,37 +8,76 @@ function ShoppingList() {
   const [selectedPlanId, setSelectedPlanId] = useState(null);
   const [checkedItems, setCheckedItems] = useState(new Set());
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+  const userId = localStorage.getItem("userId");
+
+  // Get current week dates (Monday to Sunday) - same logic as CalendarPage
+  const getCurrentWeekDates = () => {
+    const today = new Date();
+    const day = today.getDay();
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1); // Adjust to Monday
+    const monday = new Date(today.setDate(diff));
+
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+      weekDates.push(date.toISOString().split("T")[0]);
+    }
+    return weekDates;
+  };
 
   // Fetch user's meal plans
   useEffect(() => {
-    if (currentUser.userId) {
-      fetch(`http://localhost:8080/api/mealplans?userId=${currentUser.userId}`)
-        .then(res => res.json())
-        .then(data => {
-          setMealPlans(data);
-          if (data.length > 0) {
-            setSelectedPlanId(data[0].id);
+    if (userId) {
+      axios
+        .get(`http://localhost:8080/api/mealplans?userId=${userId}`)
+        .then((res) => {
+          const plans = res.data;
+          setMealPlans(plans);
+
+          // Find current week's meal plan
+          const weekDates = getCurrentWeekDates();
+          const startDate = weekDates[0];
+          const endDate = weekDates[6];
+
+          const normalizeDate = (dateStr) => {
+            if (!dateStr) return null;
+            return dateStr.split("T")[0];
+          };
+
+          const currentWeekPlan = plans.find((p) => {
+            const planStart = normalizeDate(p.startDate);
+            const planEnd = normalizeDate(p.endDate);
+            return planStart === startDate && planEnd === endDate;
+          });
+
+          // Default to current week plan, or first plan if no current week plan exists
+          if (currentWeekPlan) {
+            setSelectedPlanId(currentWeekPlan.id);
+          } else if (plans.length > 0) {
+            setSelectedPlanId(plans[0].id);
           }
         })
-        .catch(err => console.error('Error fetching meal plans:', err));
+        .catch((err) => console.error("Error fetching meal plans:", err));
     }
-  }, [currentUser.userId]);
+  }, [userId]);
 
   // Generate shopping list when meal plan is selected
   useEffect(() => {
     if (selectedPlanId) {
       setLoading(true);
-      fetch(`http://localhost:8080/api/shopping-list?mealPlanId=${selectedPlanId}`)
-        .then(res => res.json())
-        .then(data => {
-          setIngredients(data);
+      axios
+        .get(
+          `http://localhost:8080/api/shopping-list?mealPlanId=${selectedPlanId}`
+        )
+        .then((res) => {
+          setIngredients(res.data || []);
           setLoading(false);
         })
-        .catch(err => {
-          console.error('Error generating shopping list:', err);
+        .catch((err) => {
+          console.error("Error generating shopping list:", err);
           setLoading(false);
         });
     }
@@ -53,14 +93,14 @@ function ShoppingList() {
     setCheckedItems(newChecked);
   };
 
-  const filteredIngredients = ingredients.filter(item =>
+  const filteredIngredients = ingredients.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const checkedCount = checkedItems.size;
   const totalCount = filteredIngredients.length;
 
-  const selectedPlan = mealPlans.find(p => p.id === selectedPlanId);
+  const selectedPlan = mealPlans.find((p) => p.id === selectedPlanId);
 
   return (
     <div className="page">
@@ -70,18 +110,41 @@ function ShoppingList() {
             <h1>Shopping List</h1>
             <p>Ingredients from your meal plan</p>
           </div>
+          {selectedPlanId && (
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                setLoading(true);
+                axios
+                  .get(
+                    `http://localhost:8080/api/shopping-list?mealPlanId=${selectedPlanId}`
+                  )
+                  .then((res) => {
+                    setIngredients(res.data || []);
+                    setLoading(false);
+                  })
+                  .catch((err) => {
+                    console.error("Error refreshing shopping list:", err);
+                    setLoading(false);
+                  });
+              }}
+              disabled={loading}
+            >
+              {loading ? "Refreshing..." : "🔄 Refresh"}
+            </button>
+          )}
         </div>
 
         {/* Meal Plan Selector */}
         {mealPlans.length > 0 && (
           <div className="meal-plan-selector">
             <label>Select Meal Plan: </label>
-            <select 
-              value={selectedPlanId || ''}
+            <select
+              value={selectedPlanId || ""}
               onChange={(e) => setSelectedPlanId(parseInt(e.target.value))}
               className="plan-select"
             >
-              {mealPlans.map(plan => (
+              {mealPlans.map((plan) => (
                 <option key={plan.id} value={plan.id}>
                   {plan.title} ({new Date(plan.startDate).toLocaleDateString()})
                 </option>
@@ -93,22 +156,34 @@ function ShoppingList() {
         {selectedPlan && (
           <div className="plan-info">
             <h3>Shopping list for: {selectedPlan.title}</h3>
-            <p>{new Date(selectedPlan.startDate).toLocaleDateString()} - {new Date(selectedPlan.endDate).toLocaleDateString()}</p>
+            <p>
+              {new Date(selectedPlan.startDate).toLocaleDateString()} -{" "}
+              {new Date(selectedPlan.endDate).toLocaleDateString()}
+            </p>
           </div>
         )}
 
         {/* Progress */}
         <div className="shopping-progress">
           <div className="progress-text">
-            <span>{checkedCount} of {totalCount} items</span>
+            <span>
+              {checkedCount} of {totalCount} items
+            </span>
             <span className="progress-percent">
-              {totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0}%
+              {totalCount > 0
+                ? Math.round((checkedCount / totalCount) * 100)
+                : 0}
+              %
             </span>
           </div>
           <div className="progress-bar-container">
-            <div 
+            <div
               className="progress-bar-fill"
-              style={{width: `${totalCount > 0 ? (checkedCount / totalCount) * 100 : 0}%`}}
+              style={{
+                width: `${
+                  totalCount > 0 ? (checkedCount / totalCount) * 100 : 0
+                }%`,
+              }}
             ></div>
           </div>
         </div>
@@ -139,7 +214,7 @@ function ShoppingList() {
           <div className="shopping-list-card">
             <div className="list-header">
               <h3>Ingredients ({totalCount})</h3>
-              <button 
+              <button
                 className="btn btn-secondary btn-sm"
                 onClick={() => setCheckedItems(new Set())}
               >
@@ -148,10 +223,12 @@ function ShoppingList() {
             </div>
 
             <div className="shopping-items">
-              {filteredIngredients.map(item => (
+              {filteredIngredients.map((item) => (
                 <div
                   key={item.id}
-                  className={`shopping-item ${checkedItems.has(item.id) ? 'checked' : ''}`}
+                  className={`shopping-item ${
+                    checkedItems.has(item.id) ? "checked" : ""
+                  }`}
                   onClick={() => toggleItem(item.id)}
                 >
                   <div className="item-checkbox">
@@ -163,7 +240,9 @@ function ShoppingList() {
                   </div>
                   <div className="item-details">
                     <span className="item-name">{item.name}</span>
-                    <span className="item-quantity">{item.quantity} {item.unit}</span>
+                    <span className="item-quantity">
+                      {item.quantity} {item.unit}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -179,8 +258,14 @@ function ShoppingList() {
 
         {/* Info Card */}
         <div className="info-card">
-          <h3>💡 Tip</h3>
-          <p>The shopping list automatically aggregates all ingredients from your selected meal plan. Check off items as you shop!</p>
+          <h3>💡 How it works</h3>
+          <p>
+            The shopping list is automatically generated from all recipes in
+            your meal plan. When you add recipes to your weekly meal planner,
+            their ingredients are aggregated here. Ingredients with the same
+            name and unit are combined, and quantities are summed up. Check off
+            items as you shop!
+          </p>
         </div>
       </div>
     </div>
